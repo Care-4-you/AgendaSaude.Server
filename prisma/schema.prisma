@@ -14,15 +14,21 @@ datasource db {
 }
 
 model Clinic {
-  id              Int      @id @default(autoincrement())
-  name            String
-  address         String
-  specialty       String
-  phone           String
-  email           String   @unique
-  password_hash   String
-  agreements      String[]
-  payment_methods String[]
+  id            Int     @id @default(autoincrement())
+  name          String
+  specialty     String
+  phone         String
+  email         String  @unique
+  password_hash String
+  address       String
+  cep           String
+  city          String
+  state         String
+  neighborhood  String
+  complement    String?
+  //TODO: como será utilizado essas infos
+  // agreements      String[]
+  // payment_methods String[]
 
   @@map("clinics")
 }
