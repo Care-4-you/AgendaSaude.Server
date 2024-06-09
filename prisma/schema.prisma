@@ -26,6 +26,7 @@ model Clinic {
   state         String
   neighborhood  String
   complement    String?
+  created_at    DateTime @default(now())
   //TODO: como será utilizado essas infos
   // agreements      String[]
   // payment_methods String[]
@@ -40,6 +41,7 @@ model Pacient {
   phone         String
   email         String @unique
   password_hash String
+  created_at    DateTime @default(now())
 
   @@map("pacients")
 }
@@ -49,6 +51,7 @@ model Medic {
   name      String
   specialty String
   crm       String
+  created_at    DateTime @default(now())
   // TODO: Id clinica
 
   @@map("medics")
