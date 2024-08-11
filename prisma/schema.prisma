@@ -30,6 +30,7 @@ model Clinic {
   //TODO: como será utilizado essas infos
   // agreements      String[]
   // payment_methods String[]
+  Medic         Medic[] // Um-para-muitos
   Consultation  Consultation[] // Um-para-Muitos
 
   @@map("clinics")
@@ -56,7 +57,9 @@ model Medic {
   specialty  String
   crm        String
   created_at DateTime @default(now())
-  // TODO: Id clinica
+
+  clinic   Clinic @relation(fields: [clinicId], references: [id]) // Muitos-para-um
+  clinicId Int
 
   Treatment    Treatment[] // Relação um-para-muitos
   Consultation Consultation[] // Um-para-muitos
