@@ -14,11 +14,11 @@ datasource db {
 }
 
 model Clinic {
-  id            Int     @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   name          String
   specialty     String
   phone         String
-  email         String  @unique
+  email         String   @unique
   password_hash String
   address       String
   cep           String
@@ -35,24 +35,28 @@ model Clinic {
 }
 
 model Pacient {
-  id            Int    @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   name          String
   address       String
   phone         String
-  email         String @unique
+  email         String   @unique
   password_hash String
   created_at    DateTime @default(now())
+
+  Treatment Treatment[] // Relação um-para-muitos
 
   @@map("pacients")
 }
 
 model Medic {
-  id        Int    @id @default(autoincrement())
-  name      String
-  specialty String
-  crm       String
-  created_at    DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  name       String
+  specialty  String
+  crm        String
+  created_at DateTime @default(now())
   // TODO: Id clinica
+
+  Treatment Treatment[] // Relação um-para-muitos
 
   @@map("medics")
 }
@@ -60,5 +64,26 @@ model Medic {
 model Consultation {
   id Int @id @default(autoincrement())
 
+  Treatment Treatment[] // Relação um-para-muitos
+
   @@map("consultations")
+}
+
+model Treatment {
+  id          Int      @id @default(autoincrement())
+  description String
+  attached    String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
+
+  pacient   Pacient @relation(fields: [pacientId], references: [id]) // Relação muitos-para-um
+  pacientId Int
+
+  medic   Medic @relation(fields: [medicId], references: [id]) // Relação muitos-para-um
+  medicId Int
+
+  consulation   Consultation @relation(fields: [consulationId], references: [id]) // Relação muitos-para-um
+  consulationId Int
+
+  @@map("treatments")
 }

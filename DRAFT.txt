@@ -6,3 +6,4 @@
 - docker compose stop
 
 - npx prisma migrate dev
+- npx prisma generate
