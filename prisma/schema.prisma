@@ -43,6 +43,14 @@ model Pacient {
   phone         String
   email         String   @unique
   password_hash String
+  birth_date    DateTime
+  cpf           String
+  gender        String
+  cep           String
+  city          String
+  state         String
+  neighborhood  String
+  complement    String?
   created_at    DateTime @default(now())
 
   Treatment    Treatment[] // Relação um-para-muitos
