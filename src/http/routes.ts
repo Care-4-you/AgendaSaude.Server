@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { registerClinic } from "./modules/clinic/controllers/registerClinic";
+import { registerClinic } from "./controllers/clinic/registerClinic";
 
 export const appRoutes = async (app: FastifyInstance) => {
   app.get("/", () => {

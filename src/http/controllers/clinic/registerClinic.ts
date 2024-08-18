@@ -1,5 +1,5 @@
 import { ClinicAlreadyExistsError } from "@/use-cases/errors/clinic/clinic-already-exist-error";
-import { makeClinicUseCase } from "@/use-cases/factories/make-clinic-use-case";
+import { makeClinicUseCase } from "@/use-cases/factories/clinic/make-clinic-use-case";
 import { FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
 
@@ -38,7 +38,6 @@ export const registerClinic = async (
     phone,
     email,
     password,
-    passwordConfirmation,
     address,
     cep,
     city,
