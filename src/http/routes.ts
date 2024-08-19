@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { registerClinic } from "./controllers/clinic/registerClinic";
 import { registerPacient } from "./controllers/pacient/registePacient";
+import { pacientAuthenticate } from "./controllers/auth/pacient-authenticate";
 
 export const appRoutes = async (app: FastifyInstance) => {
   app.get("/", () => {
@@ -12,4 +13,6 @@ export const appRoutes = async (app: FastifyInstance) => {
 
   // Rotas para pacientes
   app.post("/pacients", registerPacient);
+
+  app.post("/pacient/session", pacientAuthenticate);
 };
