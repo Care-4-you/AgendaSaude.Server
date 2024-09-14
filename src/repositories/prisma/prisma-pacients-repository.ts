@@ -19,6 +19,14 @@ export class PrismaPacientsRepository implements PacientsRepository {
     return pacient;
   }
 
+  async findByCpf(cpf: string): Promise<Pacient | null> {
+    const pacient = await prisma.pacient.findUnique({
+      where: { cpf },
+    });
+
+    return pacient;
+  }
+
   async create(data: Prisma.PacientCreateInput): Promise<Pacient> {
     const pacient = await prisma.pacient.create({ data });
 

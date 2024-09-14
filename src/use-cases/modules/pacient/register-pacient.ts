@@ -49,7 +49,13 @@ export class RegisterPacientUseCase {
       await this.pacientRepository.findByEmail(email);
 
     if (pacientWithSameEmail) {
-      throw new PacientAlreadyExistsError();
+      throw new PacientAlreadyExistsError("Pacient e-mail already exists!");
+    }
+
+    const pacientWithSameCpf = await this.pacientRepository.findByCpf(cpf);
+
+    if (pacientWithSameCpf) {
+      throw new PacientAlreadyExistsError("Pacient CPF already exists!");
     }
 
     const birthDate = StringToDate(birth_date);

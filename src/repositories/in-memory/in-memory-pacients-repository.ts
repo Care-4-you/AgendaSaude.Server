@@ -25,6 +25,16 @@ export class InMemoryPacientsRepository implements PacientsRepository {
     return pacient;
   }
 
+  async findByCpf(cpf: string): Promise<Pacient | null> {
+    const pacient = this.items.find((item) => item.cpf === cpf);
+
+    if (!pacient) {
+      return null;
+    }
+
+    return pacient;
+  }
+
   async create(data: Prisma.PacientCreateInput): Promise<Pacient> {
     const pacient: Pacient = {
       id: randomNumberWithDigits(),

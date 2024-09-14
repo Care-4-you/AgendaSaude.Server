@@ -5,6 +5,8 @@ export interface PacientsRepository {
 
   findByEmail(email: string): Promise<Pacient | null>;
 
+  findByCpf(cpf: string): Promise<Pacient | null>;
+
   create(data: Prisma.PacientCreateInput): Promise<Pacient>;
 
   save(pacient: Pacient): Promise<Pacient>;
