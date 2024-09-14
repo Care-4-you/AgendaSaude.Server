@@ -3,8 +3,18 @@ import { appRoutes } from "./http/routes";
 import { ZodError } from "zod";
 import { env } from "./env";
 import fastifyJwt from "@fastify/jwt";
+import fastifyCors from "@fastify/cors";
 
 export const app = fastify();
+
+app.register(fastifyCors, {
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+  maxAge: 86400, // Define o tempo de cache em segundos (aqui, 24 horas)
+  cacheControl: 10800, // Define Cache-Control com max-age=10800 segundos (3 horas)
+});
 
 app.register(fastifyJwt, {
   secret: env.JWT_SECRET,
