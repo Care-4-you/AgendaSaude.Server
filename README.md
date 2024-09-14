@@ -6,8 +6,8 @@ Back-end/servidor da aplicação Care4You.
 
 ### Pacientes
 
-- [] Deve ser possível o paciente se cadastrar no sistema
-- [] Deve ser possível o paciente se autentificar
+- [x] Deve ser possível o paciente se cadastrar no sistema
+- [x] Deve ser possível o paciente se autentificar
 - [] Deve ser possível agendar uma consulta
 - [] Deve ser possível o paciente escolher os horários para consultas
 - [] Deve ser possível o paciente visualizar as clinicas com disponibilidade de seu convenio
@@ -29,6 +29,6 @@ Back-end/servidor da aplicação Care4You.
 
 - [x] A senha deve estar criptografada
 - [x] Todos os dados da aplicação devem ser salvos em um banco de dados
-- [] A autentificação do usuário deve ser feita utilizando algum metodo de autentificação (JWT)
+- [x] A autentificação do usuário deve ser feita utilizando algum metodo de autentificação (JWT)
 
 ### Pessoas responsáveis

@@ -1,18 +1,15 @@
 import { FastifyInstance } from "fastify";
+
 import { registerClinic } from "./controllers/clinic/registerClinic";
-import { registerPacient } from "./controllers/pacient/registePacient";
-import { pacientAuthenticate } from "./controllers/auth/pacient-authenticate";
+import { pacientRoutes } from "./routes/pacientRoutes";
+import { clinicRoutes } from "./routes/clinicRoutes";
 
 export const appRoutes = async (app: FastifyInstance) => {
   app.get("/", () => {
     return "Conexão API Care4You!";
   });
 
-  // Rotas clinicas
-  app.post("/clinics", registerClinic);
+  await app.register(pacientRoutes);
 
-  // Rotas para pacientes
-  app.post("/pacients", registerPacient);
-
-  app.post("/pacient/session", pacientAuthenticate);
+  await app.register(clinicRoutes);
 };

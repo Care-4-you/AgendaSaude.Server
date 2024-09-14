@@ -44,7 +44,7 @@ model Pacient {
   email         String   @unique
   password_hash String
   birth_date    DateTime
-  cpf           String
+  cpf           String   @unique
   gender        String
   cep           String
   city          String
