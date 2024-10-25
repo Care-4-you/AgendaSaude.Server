@@ -37,21 +37,22 @@ model Clinic {
 }
 
 model Pacient {
-  id            Int      @id @default(autoincrement())
-  name          String
-  address       String
-  phone         String
-  email         String   @unique
-  password_hash String
-  birth_date    DateTime
-  cpf           String   @unique
-  gender        String
-  cep           String
-  city          String
-  state         String
-  neighborhood  String
-  complement    String?
-  created_at    DateTime @default(now())
+  id              Int      @id @default(autoincrement())
+  name            String
+  address         String
+  phone           String
+  email           String   @unique
+  password_hash   String
+  birth_date      DateTime
+  cpf             String   @unique
+  gender          String
+  cep             String
+  city            String
+  state           String
+  neighborhood    String
+  complement      String?
+  isAuthenticated Boolean  @default(false)
+  created_at      DateTime @default(now())
 
   Treatment    Treatment[] // Relação um-para-muitos
   Consultation Consultation[] // Um-para-muitos
