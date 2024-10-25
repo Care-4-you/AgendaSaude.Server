@@ -54,6 +54,7 @@ export class InMemoryPacientsRepository implements PacientsRepository {
       neighborhood: data.neighborhood,
       state: data.state,
       complement: data.complement ?? "",
+      isAuthenticated: false,
       created_at: new Date(),
     };
 
