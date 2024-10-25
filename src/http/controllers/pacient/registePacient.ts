@@ -54,7 +54,7 @@ export const registerPacient = async (
   try {
     const registerPacientUseCase = makePacientUseCase();
 
-    const pacient = await registerPacientUseCase.execute({
+    const { pacient } = await registerPacientUseCase.execute({
       name,
       address,
       phone,
@@ -70,9 +70,18 @@ export const registerPacient = async (
       neighborhood,
     });
 
+    const activationToken = await reply.jwtSign(
+      {
+        email: pacient.email,
+      },
+      {
+        expiresIn: "6h", // Coloque diretamente a propriedade 'expiresIn'
+      },
+    );
+
     return reply.status(201).send({
-      message: "Pacient successfully created!",
       data: pacient,
+      activationToken,
     });
   } catch (error) {
     if (error instanceof PacientAlreadyExistsError) {
