@@ -1,4 +1,4 @@
-export class PacientAlreadyExistsError extends Error {
+export class InvalidDataPassedError extends Error {
   constructor(message: string) {
     super(message);
   }

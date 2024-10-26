@@ -1,3 +1,7 @@
+--- Necessario ter um banco postgresql na sua maquina para rodar a aplicação, seja local ou via docker
+
+--> Usando via Docker:
+
 # docker run --name api-solid-pg -e POSTGRESQL_USERNAME=docker -e POSTGRESQL_PASSWORD=docker -e POSTGRESQL_DATABASE=apisolid -p 5432:5432 bitnami/postgresql
 
 - Startar: docker start api-solid-pg
@@ -5,5 +9,23 @@
 - docker compose up -d
 - docker compose stop
 
+---> Via Local:
+
+Acesse esse link e escolha a versão a ser instalada: https://www.postgresql.org/download/windows/
+
+--- Antes de rodar a aplicação é necessario rodar os seguintes comandos do Prisma
+
 - npx prisma migrate dev
 - npx prisma generate
+
+--- Rodar API local:
+
+- npm install
+
+- npm run dev
+
+--- Rodar comando de testes unitarios (dev):
+
+- npm install
+
+- npm run test
