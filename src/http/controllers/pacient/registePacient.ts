@@ -16,7 +16,7 @@ export const registerPacient = async (
       password: z.string(),
       passwordConfirmation: z.string(),
       birth_date: z.string(),
-      cpf: z.string().max(11),
+      cpf: z.string().max(11), // apenas numero no CPF ex: 54879521061
       gender: z.string(),
       address: z.string(),
       cep: z.string(),
