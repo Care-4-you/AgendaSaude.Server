@@ -19,6 +19,7 @@ model Clinic {
   specialty     String
   phone         String
   email         String         @unique
+  cnpj          String         @unique
   password_hash String
   address       String
   cep           String

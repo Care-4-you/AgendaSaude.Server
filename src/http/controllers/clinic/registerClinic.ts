@@ -1,5 +1,6 @@
 import { ClinicAlreadyExistsError } from "@/use-cases/errors/clinic/clinic-already-exist-error";
 import { makeClinicUseCase } from "@/use-cases/factories/clinic/make-clinic-use-case";
+import { cnpjFormatRegex, isValidCNPJ } from "@/utils/cnpjValidFormated";
 import { FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
 
@@ -13,6 +14,11 @@ export const registerClinic = async (
       specialty: z.string(),
       phone: z.string(),
       email: z.string().email(),
+      cnpj: z
+        .string()
+        .refine((cnpj) => cnpjFormatRegex.test(cnpj) && isValidCNPJ(cnpj), {
+          message: "Invalid CNPJ format or value",
+        }),
       password: z.string(),
       passwordConfirmation: z.string(),
       address: z.string(),
@@ -37,6 +43,7 @@ export const registerClinic = async (
     specialty,
     phone,
     email,
+    cnpj,
     password,
     address,
     cep,
@@ -54,6 +61,7 @@ export const registerClinic = async (
       specialty,
       phone,
       email,
+      cnpj,
       password,
       address,
       cep,

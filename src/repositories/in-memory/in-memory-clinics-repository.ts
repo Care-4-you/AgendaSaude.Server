@@ -15,12 +15,23 @@ export class InMemoryClinicsRepository implements ClinicsRepository {
     return clinic;
   }
 
+  async findByCnpj(cnpj: string): Promise<Clinic | null> {
+    const clinic = this.items.find((item) => item.cnpj === cnpj);
+
+    if (!clinic) {
+      return null;
+    }
+
+    return clinic;
+  }
+
   async create(data: Prisma.ClinicCreateInput): Promise<Clinic> {
     const clinic: Clinic = {
       id: randomNumberWithDigits(),
       name: data.name,
       specialty: data.specialty,
       email: data.email,
+      cnpj: data.cnpj,
       phone: data.phone,
       password_hash: data.password_hash,
       address: data.address,
@@ -31,9 +42,9 @@ export class InMemoryClinicsRepository implements ClinicsRepository {
       complement: data.complement === undefined ? "" : data.complement,
       created_at: new Date(),
     };
-      
-      this.items.push(clinic);
 
-      return clinic;
+    this.items.push(clinic);
+
+    return clinic;
   }
 }

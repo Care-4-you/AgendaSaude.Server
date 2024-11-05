@@ -8,6 +8,7 @@ interface IRegisterClinic {
   specialty: string;
   phone: string;
   email: string;
+  cnpj: string;
   password: string;
   address: string;
   cep: string;
@@ -29,6 +30,7 @@ export class RegisterClinicUseCase {
     specialty,
     phone,
     email,
+    cnpj,
     password,
     address,
     cep,
@@ -45,11 +47,18 @@ export class RegisterClinicUseCase {
       throw new ClinicAlreadyExistsError();
     }
 
+    const clinicWithSameCnpj = await this.clinicsRepository.findByCnpj(cnpj);
+
+    if (clinicWithSameCnpj) {
+      throw new ClinicAlreadyExistsError();
+    }
+
     const clinic = await this.clinicsRepository.create({
       name,
       specialty,
       phone,
       email,
+      cnpj,
       password_hash,
       address,
       cep,

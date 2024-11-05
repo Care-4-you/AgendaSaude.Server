@@ -13,8 +13,16 @@ export class PrismaClinicsRepository implements ClinicsRepository {
 
   async findByEmail(email: string) {
     const clinic = await prisma.clinic.findUnique({
-      where: { email }
-    })
+      where: { email },
+    });
+
+    return clinic;
+  }
+
+  async findByCnpj(cnpj: string): Promise<Clinic | null> {
+    const clinic = await prisma.clinic.findUnique({
+      where: { cnpj },
+    });
 
     return clinic;
   }
