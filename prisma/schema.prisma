@@ -62,13 +62,19 @@ model Pacient {
 }
 
 model Medic {
-  id         Int      @id @default(autoincrement())
+  id         Int              @id @default(autoincrement())
   name       String
-  specialty  String
-  crm        String
-  created_at DateTime @default(now())
+  cpf        String           @unique
+  phone      String
+  email      String           @unique
+  gender     String
+  city       String
+  state      String
+  specialty  MedicSpecialty[]
+  crm        MedicCrm[]
+  created_at DateTime         @default(now())
 
-  clinic   Clinic @relation(fields: [clinicId], references: [id]) // Muitos-para-um
+  clinic   Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade, onUpdate: Cascade) // Muitos-para-um
   clinicId Int
 
   Treatment    Treatment[] // Relação um-para-muitos
@@ -77,19 +83,34 @@ model Medic {
   @@map("medics")
 }
 
+model MedicSpecialty {
+  id        Int    @id @default(autoincrement())
+  specialty String
+  medic     Medic  @relation(fields: [medicId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  medicId   Int
+}
+
+model MedicCrm {
+  id      Int    @id @default(autoincrement())
+  number  String
+  state   String
+  medic   Medic  @relation(fields: [medicId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  medicId Int
+}
+
 model Consultation {
   id           Int      @id @default(autoincrement())
   consult_time DateTime
   created_at   DateTime @default(now())
   updated_at   DateTime @default(now())
 
-  pacient   Pacient @relation(fields: [pacientId], references: [id]) // Muitos-para-um
+  pacient   Pacient @relation(fields: [pacientId], references: [id], onDelete: Cascade, onUpdate: Cascade) // Muitos-para-um
   pacientId Int
 
-  medic   Medic @relation(fields: [medicId], references: [id]) // Muitos-para-um
+  medic   Medic @relation(fields: [medicId], references: [id], onDelete: Cascade, onUpdate: Cascade) // Muitos-para-um
   medicId Int
 
-  clinic   Clinic @relation(fields: [clinicId], references: [id]) // Muitos-para-um
+  clinic   Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade, onUpdate: Cascade) // Muitos-para-um
   clinicId Int
 
   Treatment Treatment[] // Relação um-para-muitos
@@ -104,13 +125,13 @@ model Treatment {
   created_at  DateTime @default(now())
   updated_at  DateTime @default(now())
 
-  pacient   Pacient @relation(fields: [pacientId], references: [id]) // Relação muitos-para-um
+  pacient   Pacient @relation(fields: [pacientId], references: [id], onDelete: Cascade, onUpdate: Cascade) // Relação muitos-para-um
   pacientId Int
 
-  medic   Medic @relation(fields: [medicId], references: [id]) // Relação muitos-para-um
+  medic   Medic @relation(fields: [medicId], references: [id], onDelete: Cascade, onUpdate: Cascade) // Relação muitos-para-um
   medicId Int
 
-  consulation   Consultation @relation(fields: [consulationId], references: [id]) // Relação muitos-para-um
+  consulation   Consultation @relation(fields: [consulationId], references: [id], onDelete: Cascade, onUpdate: Cascade) // Relação muitos-para-um
   consulationId Int
 
   @@map("treatments")
