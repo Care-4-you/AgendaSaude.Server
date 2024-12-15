@@ -92,7 +92,7 @@ model MedicSpecialty {
 
 model MedicCrm {
   id      Int    @id @default(autoincrement())
-  number  String
+  number  String @unique
   state   String
   medic   Medic  @relation(fields: [medicId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   medicId Int
