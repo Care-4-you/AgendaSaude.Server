@@ -29,6 +29,7 @@ model Clinic {
   neighborhood  String
   complement    String?
   created_at    DateTime       @default(now())
+  isAuthenticated Boolean      @default(false)
   //TODO: como será utilizado essas infos
   // agreements      String[]
   // payment_methods String[]
