@@ -3,6 +3,9 @@ import { makeClinicUseCase } from "@/use-cases/factories/clinic/make-clinic-use-
 import { cnpjFormatRegex, isValidCNPJ } from "@/utils/cnpjValidFormated";
 import { FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
+import { sendActivationEmail } from "@/utils/emails/send-activation-email";
+import { env } from "@/env";
+import jwt from "jsonwebtoken";
 
 export const registerClinic = async (
   request: FastifyRequest,
@@ -56,7 +59,7 @@ export const registerClinic = async (
   try {
     const registerClinicUseCase = makeClinicUseCase();
 
-    const clinic = await registerClinicUseCase.execute({
+    const { clinic } = await registerClinicUseCase.execute({
       name,
       specialty,
       phone,
@@ -71,9 +74,30 @@ export const registerClinic = async (
       complement,
     });
 
+    const activationToken = jwt.sign(
+      {
+        email: clinic.email,
+        type: "clinicActivation"
+      },
+      env.JWT_SECRET,
+      {
+        expiresIn: "24h",
+      }
+    );
+
+    // Enviar email de ativação
+    await sendActivationEmail(
+      clinic.email,
+      clinic.name,
+      activationToken
+    );
+
     return reply.status(201).send({
-      message: "Clinic successfully created!",
-      data: clinic,
+      message: "Clinic successfully created! Please check your email to activate your account.",
+      data: {
+        ...clinic,
+        password_hash: undefined,
+      },
     });
   } catch (error) {
     if (error instanceof ClinicAlreadyExistsError) {
