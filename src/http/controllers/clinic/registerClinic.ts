@@ -85,7 +85,6 @@ export const registerClinic = async (
       }
     );
 
-    // Enviar email de ativação
     await sendActivationEmail(
       clinic.email,
       clinic.name,

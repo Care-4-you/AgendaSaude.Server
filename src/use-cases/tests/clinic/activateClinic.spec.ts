@@ -1,9 +1,7 @@
 import { activateClinic } from "@/http/controllers/clinic/activateClinic";
-import { prisma } from "@/lib/prisma";
 import { FastifyRequest, FastifyReply } from "fastify";
 import { describe, it, expect, vi } from "vitest";
 
-// Mock dos módulos com Vitest
 const prismaMock = vi.hoisted(() => ({
   clinic: {
     findUnique: vi.fn(),
@@ -11,7 +9,6 @@ const prismaMock = vi.hoisted(() => ({
   }
 }));
 
-// Mock simplificado do jsonwebtoken que não usa classes personalizadas
 const jwtMock = vi.hoisted(() => {
   const mock = {
     verify: vi.fn(),
@@ -22,7 +19,6 @@ const jwtMock = vi.hoisted(() => {
     NotBeforeError: { name: 'NotBeforeError' }
   };
 
-  // Retornar o mock como exportação padrão e também como propriedades individuais
   return {
     default: mock,
     ...mock
@@ -122,7 +118,6 @@ describe("activateClinic", () => {
   });
 
   it("should return 401 if token is invalid or expired", async () => {
-    // Usar um erro com o nome correto, sem precisar de classes personalizadas
     const error = new Error("invalid token");
     error.name = "JsonWebTokenError";
     jwtMock.verify.mockImplementation(() => {
@@ -147,7 +142,6 @@ describe("activateClinic", () => {
   });
 
   it("should handle token expiration error", async () => {
-    // Usar um erro com o nome correto, sem precisar de classes personalizadas
     const error = new Error("token expired");
     error.name = "TokenExpiredError";
     jwtMock.verify.mockImplementation(() => {

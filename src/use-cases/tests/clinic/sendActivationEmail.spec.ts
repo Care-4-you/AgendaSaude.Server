@@ -22,7 +22,6 @@ describe("sendActivationEmail", () => {
     const clinicName = "Test Clinic";
     const activationToken = "test-token";
 
-    // Simplificado: removido o .then desnecessário
     await sendActivationEmail(email, clinicName, activationToken);
     expect(sendMailMock).toHaveBeenCalled();
 

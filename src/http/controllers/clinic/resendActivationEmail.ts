@@ -16,7 +16,6 @@ export const resendActivationEmail = async (
   try {
     const { email } = resendActivationSchema.parse(request.body);
 
-    // Buscar a clínica pelo email
     const clinic = await prisma.clinic.findUnique({
       where: { email },
     });
@@ -27,14 +26,12 @@ export const resendActivationEmail = async (
       });
     }
 
-    // Se a clínica já estiver autenticada, apenas informar
     if (clinic.isAuthenticated) {
       return reply.status(200).send({
         message: "Clinic account is already activated."
       });
     }
 
-    // Gerar token de ativação com jsonwebtoken
     const activationToken = jwt.sign(
       {
         email: clinic.email,
@@ -46,7 +43,6 @@ export const resendActivationEmail = async (
       }
     );
 
-    // Reenviar email de ativação
     await sendActivationEmail(
       clinic.email,
       clinic.name,

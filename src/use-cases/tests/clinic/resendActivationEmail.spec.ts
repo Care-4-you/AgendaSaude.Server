@@ -1,14 +1,11 @@
-import { prisma } from "@/lib/prisma";
 import { sendActivationEmail } from "@/utils/emails/send-activation-email";
 import jwt from "jsonwebtoken";
 import { FastifyRequest, FastifyReply } from "fastify";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { resendActivationEmail } from "@/http/controllers/clinic/resendActivationEmail";
-import { mockDeep } from "jest-mock-extended";
 import { env } from "@/env";
 import { ZodError } from "zod";
 
-// Mock dos módulos
 const { prismaMock } = vi.hoisted(() => ({
   prismaMock: {
     clinic: {
