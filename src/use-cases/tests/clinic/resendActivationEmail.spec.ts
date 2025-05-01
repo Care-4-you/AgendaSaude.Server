@@ -5,6 +5,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { resendActivationEmail } from "@/http/controllers/clinic/resendActivationEmail";
 import { env } from "@/env";
 import { ZodError } from "zod";
+import { Clinic } from "@prisma/client";
 
 const { prismaMock } = vi.hoisted(() => ({
   prismaMock: {
@@ -24,11 +25,15 @@ vi.mock("@/env", () => ({
   },
 }));
 
-const mockClinic = {
+const mockClinic: Clinic = {
   id: 1,
   name: "Test Clinic",
-  specialty: "General",
   phone: "123456789",
+  cellPhone: "987654321",
+  whatsapp: "987654321",
+  hasNumber: true,
+  houseNumber: "42",
+  acceptTerm: true,
   email: "test@clinic.com",
   cnpj: "12.345.678/0001-90",
   password_hash: "hashedpassword",
@@ -38,8 +43,8 @@ const mockClinic = {
   state: "Clinic State",
   neighborhood: "Clinic Neighborhood",
   complement: "Clinic Complement",
-  created_at: new Date(),
   isAuthenticated: false,
+  createdAt: new Date(),
 };
 
 describe("resendActivationEmail", () => {
@@ -118,7 +123,7 @@ describe("resendActivationEmail", () => {
       name: "Test Clinic",
       email: "test@clinic.com",
       isAuthenticated: false,
-    };
+    } as Partial<Clinic>;
 
     prismaMock.clinic.findUnique.mockResolvedValue(clinicForError as any);
     (jwt.sign as any).mockReturnValue("new-token");

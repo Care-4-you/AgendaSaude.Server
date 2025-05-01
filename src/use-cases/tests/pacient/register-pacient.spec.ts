@@ -58,7 +58,7 @@ describe("Register Pacient Use Case", () => {
     expect(isPasswordHashedValid).toBe(true);
   });
 
-  it("Should not be able to register a pacient with same password", async () => {
+  it("Should not be able to register a pacient with same email", async () => {
     const email = "pacient@teste.com.br";
 
     await sut.execute({

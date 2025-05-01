@@ -1,4 +1,5 @@
 import { activateClinic } from "@/http/controllers/clinic/activateClinic";
+import { Clinic } from "@prisma/client";
 import { FastifyRequest, FastifyReply } from "fastify";
 import { describe, it, expect, vi } from "vitest";
 
@@ -33,11 +34,15 @@ vi.mock("jsonwebtoken", () => jwtMock);
 
 describe("activateClinic", () => {
   it("should activate a clinic account", async () => {
-    const mockClinic = {
+    const mockClinic: Clinic = {
       id: 1,
       name: "Test Clinic",
-      specialty: "General",
       phone: "123456789",
+      cellPhone: "987654321", 
+      whatsapp: "987654321",  
+      hasNumber: true,        
+      houseNumber: "42",      
+      acceptTerm: true,       
       email: "test@clinic.com",
       cnpj: "12.345.678/0001-90",
       password_hash: "hashedpassword",
@@ -47,8 +52,8 @@ describe("activateClinic", () => {
       state: "Clinic State",
       neighborhood: "Clinic Neighborhood",
       complement: "Clinic Complement",
-      created_at: new Date(),
       isAuthenticated: false,
+      createdAt: new Date(),
     };
 
     prismaMock.clinic.findUnique.mockResolvedValue(mockClinic);

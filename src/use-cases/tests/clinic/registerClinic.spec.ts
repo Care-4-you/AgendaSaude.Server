@@ -16,8 +16,14 @@ describe("Register Clinic Use Case", () => {
   it("Should be able to register a clinic", async () => {
     const { clinic } = await sut.execute({
       name: "Clinica Teste",
-      specialty: "Cirurgia",
+      specialty: [{ value: "cirurgia", label: "Cirurgia" }],
+      healthInsurance: [{ value: "unimed", label: "Unimed" }],
       phone: "11989234518",
+      cellPhone: "11989234518",
+      whatsapp: "11989234518",
+      hasNumber: true,
+      houseNumber: "42",
+      acceptTerm: true,
       email: "clinica@teste.com.br",
       password: "123456",
       address: "Av. Tal, 359",
@@ -35,8 +41,14 @@ describe("Register Clinic Use Case", () => {
   it("Should hash clinic password upon registration", async () => {
     const { clinic } = await sut.execute({
       name: "Clinica Teste",
-      specialty: "Cirurgia",
+      specialty: [{ value: "cirurgia", label: "Cirurgia" }],
+      healthInsurance: [{ value: "unimed", label: "Unimed" }],
       phone: "11989234518",
+      cellPhone: "11989234518",
+      whatsapp: "11989234518",
+      hasNumber: true,
+      houseNumber: "42",
+      acceptTerm: true,
       email: "clinica@teste.com.br",
       password: "123456",
       address: "Av. Tal, 359",
@@ -58,8 +70,14 @@ describe("Register Clinic Use Case", () => {
 
     await sut.execute({
       name: "Clinica Teste",
-      specialty: "Cirurgia",
+      specialty: [{ value: "cirurgia", label: "Cirurgia" }],
+      healthInsurance: [{ value: "unimed", label: "Unimed" }],
       phone: "11989234518",
+      cellPhone: "11989234518",
+      whatsapp: "11989234518",
+      hasNumber: true,
+      houseNumber: "42",
+      acceptTerm: true,
       email,
       password: "123456",
       address: "Av. Tal, 359",
@@ -74,8 +92,14 @@ describe("Register Clinic Use Case", () => {
     await expect(() =>
       sut.execute({
         name: "Clinica Teste",
-        specialty: "Cirurgia",
+        specialty: [{ value: "cirurgia", label: "Cirurgia" }],
+        healthInsurance: [{ value: "unimed", label: "Unimed" }],
         phone: "11989234518",
+        cellPhone: "11989234518",
+        whatsapp: "11989234518",
+        hasNumber: true,
+        houseNumber: "42",
+        acceptTerm: true,
         email,
         password: "123456",
         address: "Av. Tal, 359",
