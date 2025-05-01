@@ -5,8 +5,20 @@ import { Clinic } from "@prisma/client";
 
 interface IRegisterClinic {
   name: string;
-  specialty: string;
+  specialty: {
+    value: string;
+    label: string;
+  }[];
+  healthInsurance: {
+    value: string;
+    label: string;
+  }[];
   phone: string;
+  cellPhone: string;
+  whatsapp: string;
+  hasNumber: boolean;
+  houseNumber: string;
+  acceptTerm: boolean;
   email: string;
   cnpj: string;
   password: string;
@@ -15,7 +27,7 @@ interface IRegisterClinic {
   city: string;
   state: string;
   neighborhood: string;
-  complement: string | null;
+  complement?: string | null;
 }
 
 interface IRegisterClinicResponse {
@@ -28,7 +40,13 @@ export class RegisterClinicUseCase {
   execute = async ({
     name,
     specialty,
+    healthInsurance,
     phone,
+    cellPhone,
+    whatsapp,
+    hasNumber,
+    houseNumber,
+    acceptTerm,
     email,
     cnpj,
     password,
@@ -55,8 +73,18 @@ export class RegisterClinicUseCase {
 
     const clinic = await this.clinicsRepository.create({
       name,
-      specialty,
+      specialty: {
+        create: specialty
+      },
+      healthInsurance: {
+        create: healthInsurance
+      },
       phone,
+      cellPhone,
+      whatsapp,
+      hasNumber,
+      houseNumber,
+      acceptTerm,
       email,
       cnpj,
       password_hash,
@@ -66,6 +94,7 @@ export class RegisterClinicUseCase {
       state,
       neighborhood,
       complement,
+      isAuthenticated: false,
     });
 
     return {

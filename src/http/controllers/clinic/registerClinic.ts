@@ -14,8 +14,24 @@ export const registerClinic = async (
   const registerBodySchema = z
     .object({
       name: z.string(),
-      specialty: z.string(),
+      specialty: z.array(
+        z.object({
+          value: z.string(),
+          label: z.string(),
+        })
+      ),
+      healthInsurance: z.array(
+        z.object({
+          value: z.string(),
+          label: z.string(),
+        })
+      ),
       phone: z.string(),
+      cellPhone: z.string(),
+      whatsapp: z.string(),
+      hasNumber: z.boolean().default(true),
+      houseNumber: z.string(),
+      acceptTerm: z.boolean(),
       email: z.string().email(),
       cnpj: z
         .string()
@@ -29,7 +45,7 @@ export const registerClinic = async (
       city: z.string(),
       state: z.string(),
       neighborhood: z.string(),
-      complement: z.string(),
+      complement: z.string().optional(),
     })
     .superRefine(({ passwordConfirmation, password }, ctx) => {
       if (passwordConfirmation !== password) {
@@ -44,7 +60,13 @@ export const registerClinic = async (
   const {
     name,
     specialty,
+    healthInsurance,
     phone,
+    cellPhone,
+    whatsapp,
+    hasNumber,
+    houseNumber,
+    acceptTerm,
     email,
     cnpj,
     password,
@@ -62,7 +84,13 @@ export const registerClinic = async (
     const { clinic } = await registerClinicUseCase.execute({
       name,
       specialty,
+      healthInsurance,
       phone,
+      cellPhone,
+      whatsapp,
+      hasNumber,
+      houseNumber,
+      acceptTerm,
       email,
       cnpj,
       password,

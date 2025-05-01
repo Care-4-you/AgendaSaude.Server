@@ -14,27 +14,53 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+model ClinicSpecialty {
+  id       Int    @id @default(autoincrement())
+  value    String
+  label    String
+  clinic   Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  clinicId Int
+}
+
+model ClinicHealthInsurance {
+  id       Int    @id @default(autoincrement())
+  value    String
+  label    String
+  clinic   Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  clinicId Int
+}
+
 model Clinic {
-  id            Int            @id @default(autoincrement())
-  name          String
-  specialty     String
-  phone         String
-  email         String         @unique
-  cnpj          String         @unique
-  password_hash String
-  address       String
-  cep           String
-  city          String
-  state         String
-  neighborhood  String
-  complement    String?
-  created_at    DateTime       @default(now())
-  isAuthenticated Boolean      @default(false)
-  //TODO: como será utilizado essas infos
-  // agreements      String[]
-  // payment_methods String[]
-  Medic         Medic[] // Um-para-muitos
-  Consultation  Consultation[] // Um-para-Muitos
+  id               Int       @id @default(autoincrement())
+  name             String
+  phone            String
+  cellPhone        String
+  whatsapp         String
+  hasNumber        Boolean   @default(true)
+  houseNumber      String
+  acceptTerm       Boolean
+  email            String    @unique
+  cnpj             String    @unique
+  password_hash    String
+  isAuthenticated  Boolean   @default(false)
+
+  // Endereço
+  address          String  
+  cep              String 
+  city             String
+  state            String
+  neighborhood     String
+  complement       String? 
+
+  // Relações para especialidades e planos de saúde
+  specialty        ClinicSpecialty[] 
+  healthInsurance  ClinicHealthInsurance[] 
+
+  createdAt        DateTime  @default(now())
+
+  // Outras relações
+  Medic            Medic[]
+  Consultation     Consultation[]
 
   @@map("clinics")
 }
