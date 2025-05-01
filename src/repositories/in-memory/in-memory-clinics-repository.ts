@@ -7,6 +7,11 @@ export class InMemoryClinicsRepository implements ClinicsRepository {
   public specialtyItems: ClinicSpecialty[] = [];
   public healthInsuranceItems: ClinicHealthInsurance[] = [];
 
+  async findById(id: number): Promise<Clinic | null> {
+    const clinic = this.items.find((item) => item.id === id);
+    return clinic || null;
+  }
+
   async findByEmail(email: string): Promise<Clinic | null> {
     const clinic = this.items.find((item) => item.email === email);
     return clinic || null;

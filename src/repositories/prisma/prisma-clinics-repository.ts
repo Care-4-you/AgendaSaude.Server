@@ -3,13 +3,13 @@ import { ClinicsRepository } from "../clinics-repository";
 import { prisma } from "@/lib/prisma";
 
 export class PrismaClinicsRepository implements ClinicsRepository {
-  // async findById(id: number) {
-  //   const clinic = await prisma.clinic.findFirst({
-  //     where: {
-  //       id,
-  //     },
-  //   });
-  // }
+  async findById(id: number): Promise<Clinic | null> {
+    const clinic = await prisma.clinic.findUnique({
+      where: { id },
+    });
+
+    return clinic;
+  }
 
   async findByEmail(email: string) {
     const clinic = await prisma.clinic.findUnique({
