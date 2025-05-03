@@ -66,25 +66,36 @@ model Clinic {
 }
 
 model Pacient {
-  id              Int      @id @default(autoincrement())
-  name            String
-  address         String
-  phone           String
-  email           String   @unique
-  password_hash   String
-  birth_date      DateTime
-  cpf             String   @unique
-  gender          String
-  cep             String
-  city            String
-  state           String
-  neighborhood    String
-  complement      String?
-  isAuthenticated Boolean  @default(false)
-  created_at      DateTime @default(now())
+  id               Int      @id @default(autoincrement())
+  name             String
+  phone            String
+  cellPhone        String
+  whatsapp         String
+  isWhatsapp       Boolean   @default(false)
+  hasNumber        Boolean   @default(true)
+  houseNumber      String
+  acceptTerm       Boolean
 
-  Treatment    Treatment[] // Relação um-para-muitos
-  Consultation Consultation[] // Um-para-muitos
+  email            String   @unique
+  cpf              String   @unique
+  password_hash    String
+  isAuthenticated  Boolean  @default(false)
+
+  address          String
+  cep              String
+  city             String
+  state            String
+  neighborhood     String
+  complement       String?
+
+  birth_date       DateTime 
+  gender           Json     
+
+  created_at       DateTime @default(now())
+
+  // Relações um-para-muitos
+  Treatment        Treatment[]
+  Consultation     Consultation[]
 
   @@map("pacients")
 }

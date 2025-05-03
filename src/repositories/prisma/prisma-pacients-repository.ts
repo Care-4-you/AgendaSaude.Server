@@ -34,9 +34,11 @@ export class PrismaPacientsRepository implements PacientsRepository {
   }
 
   async save(pacient: Pacient): Promise<Pacient> {
+    const { id, ...pacientData } = pacient;
+    
     const savePacient = await prisma.pacient.update({
-      where: { id: pacient.id },
-      data: pacient,
+      where: { id },
+      data: pacientData as Prisma.PacientUpdateInput,
     });
 
     return savePacient;

@@ -10,45 +10,69 @@ export const registerPacient = async (
 ) => {
   const registerBodySchema = z
     .object({
-      name: z.string(),
-      phone: z.string(),
+      name: z.string().min(1),
+      phone: z.string().min(8),
+      cellPhone: z.string().min(8),
+      whatsapp: z.string().min(8),
+      isWhatsapp: z.boolean(),
+      hasNumber: z.boolean(),
+      houseNumber: z.string().min(1),
+      acceptTerm: z.literal(true),
       email: z.string().email(),
-      password: z.string(),
-      passwordConfirmation: z.string(),
-      birth_date: z.string(),
-      cpf: z.string().max(11), // apenas numero no CPF ex: 54879521061
-      gender: z.string(),
-      address: z.string(),
-      cep: z.string(),
-      city: z.string(),
-      state: z.string(),
-      neighborhood: z.string(),
-      complement: z.string(),
+      password: z.string().min(6),
+      passwordConfirmation: z.string().min(6),
+      birth_date: z.coerce.date(),
+      cpf: z.string().length(11),
+      gender: z.object({
+        value: z.string(),
+        label: z.string(),
+      }),
+      address: z.string().min(1),
+      cep: z.string().min(8),
+      city: z.string().min(1),
+      state: z.string().min(1),
+      neighborhood: z.string().min(1),
+      complement: z.string().optional(),
     })
-    .superRefine(({ passwordConfirmation, password }, ctx) => {
-      if (passwordConfirmation !== password) {
-        ctx.addIssue({
-          code: "custom",
-          message: "The passwords did not match",
-          path: ["passwordConfirmation"],
-        });
-      }
-    });
+    .refine((data) => data.password === data.passwordConfirmation, {
+      path: ["passwordConfirmation"],
+      message: "The passwords did not match",
+    })
+    .refine(
+      (data) => !data.isWhatsapp || data.whatsapp === data.cellPhone,
+      {
+        path: ["whatsapp"],
+        message: "When isWhatsapp is true, whatsapp must equal cellPhone",
+      },
+    )
+    .refine(
+      (data) => data.hasNumber || data.houseNumber === "S/N",
+      {
+        path: ["houseNumber"],
+        message: "When hasNumber is false, houseNumber must be 'S/N'",
+      },
+    );
 
   const {
     name,
-    address,
     phone,
+    cellPhone,
+    whatsapp,
+    isWhatsapp,
+    hasNumber,
+    houseNumber,
+    acceptTerm,
+    email,
     password,
     birth_date,
-    email,
-    gender,
     cpf,
+    gender,
+    address,
     cep,
     city,
     state,
-    complement,
     neighborhood,
+    complement,
   } = registerBodySchema.parse(request.body);
 
   try {
@@ -56,27 +80,29 @@ export const registerPacient = async (
 
     const { pacient } = await registerPacientUseCase.execute({
       name,
-      address,
       phone,
-      password,
-      birth_date,
+      cellPhone,
+      whatsapp,
+      isWhatsapp,
+      hasNumber,
+      houseNumber,
+      acceptTerm,
       email,
-      gender,
+      password,
+      birth_date: birth_date,
       cpf,
+      gender,        
+      address,
       cep,
       city,
       state,
-      complement,
       neighborhood,
+      complement: complement ?? null,
     });
 
     const activationToken = await reply.jwtSign(
-      {
-        email: pacient.email,
-      },
-      {
-        expiresIn: "6h", // Coloque diretamente a propriedade 'expiresIn'
-      },
+      { email: pacient.email },
+      { expiresIn: "6h" },
     );
 
     return reply.status(201).send({
@@ -89,7 +115,6 @@ export const registerPacient = async (
     } else if (error instanceof InvalidDateError) {
       return reply.status(409).send({ message: error.message });
     }
-
     throw error;
   }
 };
