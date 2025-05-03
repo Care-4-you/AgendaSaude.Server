@@ -2,6 +2,10 @@
 
 Back-end/servidor da aplicação Care4You.
 
+# Documentação
+http://localhost:8080/docs
+> Nota: Este link só funciona quando o servidor está rodando localmente na porta 8080.
+
 ## RFs (Requisitos funcionais)
 
 ### Pacientes

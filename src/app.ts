@@ -4,6 +4,7 @@ import { ZodError } from "zod";
 import { env } from "./env";
 import fastifyJwt from "@fastify/jwt";
 import fastifyCors from "@fastify/cors";
+import { setupSwagger } from "./docs/swagger-setup";
 
 export const app = fastify();
 
@@ -15,6 +16,8 @@ app.register(fastifyCors, {
   maxAge: 86400, // Define o tempo de cache em segundos (aqui, 24 horas)
   cacheControl: 10800, // Define Cache-Control com max-age=10800 segundos (3 horas)
 });
+
+app.register(setupSwagger);
 
 app.register(fastifyJwt, {
   secret: env.JWT_SECRET,
