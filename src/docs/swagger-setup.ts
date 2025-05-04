@@ -151,7 +151,30 @@ export async function setupSwagger(app: FastifyInstance) {
           AuthResponse: {
             type: 'object',
             properties: {
-              token: { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' }
+              token: { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
+              role: { type: 'string', example: 'pacient' }
+            }
+          },
+
+          RequestPasswordReset: {
+            type: 'object',
+            required: ['email'],
+            properties: {
+              email: { type: 'string', format: 'email', example: 'usuario@email.com' }
+            }
+          },
+          ResetPassword: {
+            type: 'object',
+            required: ['token', 'password'],
+            properties: {
+              token: { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
+              password: { type: 'string', format: 'password', example: 'novaSenha123' }
+            }
+          },
+          SuccessResponse: {
+            type: 'object',
+            properties: {
+              message: { type: 'string', example: 'Operação realizada com sucesso.' }
             }
           },
 
@@ -648,7 +671,95 @@ export async function setupSwagger(app: FastifyInstance) {
               }
             }
           }
-        }
+        },
+        '/auth/password/request-reset': {
+          post: {
+            summary: 'Solicita redefinição de senha',
+            tags: ['Autenticação'],
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/RequestPasswordReset' }
+                }
+              }
+            },
+            responses: {
+              '200': {
+                description: 'Email de redefinição enviado com sucesso',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/SuccessResponse' }
+                  }
+                }
+              },
+              '400': {
+                description: 'Dados de entrada inválidos',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/ValidationError' }
+                  }
+                }
+              },
+              '404': {
+                description: 'Email não encontrado',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              },
+              '500': {
+                description: 'Erro interno do servidor',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              }
+            }
+          }
+        },
+        '/auth/password/reset-password': {
+          post: {
+            summary: 'Redefine a senha do usuário',
+            tags: ['Autenticação'],
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/ResetPassword' }
+                }
+              }
+            },
+            responses: {
+              '200': {
+                description: 'Senha atualizada com sucesso',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/SuccessResponse' }
+                  }
+                }
+              },
+              '400': {
+                description: 'Token inválido ou dados de entrada incorretos',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              },
+              '500': {
+                description: 'Erro interno do servidor',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              }
+            }
+          }
+        },
       }
     }
   });

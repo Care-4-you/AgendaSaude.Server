@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { pacientRoutes } from "./routes/pacientRoutes";
 import { clinicRoutes } from "./routes/clinicRoutes";
+import { commonRoutes } from "./routes/commonRoutes";
 
 export const appRoutes = async (app: FastifyInstance) => {
   app.get("/", () => {
@@ -8,6 +9,6 @@ export const appRoutes = async (app: FastifyInstance) => {
   });
 
   await app.register(pacientRoutes);
-
   await app.register(clinicRoutes);
+  await app.register(commonRoutes);
 };

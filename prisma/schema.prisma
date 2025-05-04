@@ -175,3 +175,15 @@ model Treatment {
 
   @@map("treatments")
 }
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  userType  String   // "pacient", "clinic"
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("password_reset_tokens")
+}
