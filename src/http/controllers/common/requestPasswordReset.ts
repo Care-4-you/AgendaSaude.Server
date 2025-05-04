@@ -7,7 +7,6 @@ import { env } from "@/env";
 import { EmailNotFoundError } from "@/use-cases/errors/email/email-notFound-error";
 
 export async function requestPasswordReset(request: FastifyRequest, reply: FastifyReply) {
-  // Validação do corpo da requisição - removido o campo role
   const requestPasswordResetSchema = z.object({
     email: z.string().email(),
   });
