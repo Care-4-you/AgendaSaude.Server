@@ -1,16 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -18,106 +12,93 @@ model ClinicSpecialty {
   id       Int    @id @default(autoincrement())
   value    String
   label    String
-  clinic   Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
   clinicId Int
+  clinic   Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
 }
 
 model ClinicHealthInsurance {
   id       Int    @id @default(autoincrement())
   value    String
   label    String
-  clinic   Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
   clinicId Int
+  clinic   Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
 }
 
 model Clinic {
-  id               Int       @id @default(autoincrement())
-  name             String
-  phone            String
-  cellPhone        String
-  whatsapp         String
-  hasNumber        Boolean   @default(true)
-  houseNumber      String
-  acceptTerm       Boolean
-  email            String    @unique
-  cnpj             String    @unique
-  password_hash    String
-  isAuthenticated  Boolean   @default(false)
-
-  // Endereço
-  address          String  
-  cep              String 
-  city             String
-  state            String
-  neighborhood     String
-  complement       String? 
-
-  // Relações para especialidades e planos de saúde
-  specialty        ClinicSpecialty[] 
-  healthInsurance  ClinicHealthInsurance[] 
-
-  createdAt        DateTime  @default(now())
-
-  // Outras relações
-  Medic            Medic[]
-  Consultation     Consultation[]
+  id              Int                     @id @default(autoincrement())
+  name            String
+  phone           String
+  cellPhone       String
+  whatsapp        String
+  hasNumber       Boolean                 @default(true)
+  houseNumber     String
+  acceptTerm      Boolean
+  email           String                  @unique
+  cnpj            String                  @unique
+  password_hash   String
+  isAuthenticated Boolean                 @default(false)
+  address         String
+  cep             String
+  city            String
+  state           String
+  neighborhood    String
+  complement      String?
+  latitude        Float?
+  longitude       Float?
+  createdAt       DateTime                @default(now())
+  healthInsurance ClinicHealthInsurance[]
+  specialty       ClinicSpecialty[]
+  Consultation    Consultation[]
+  Medic           Medic[]
 
   @@map("clinics")
 }
 
 model Pacient {
-  id               Int      @id @default(autoincrement())
-  name             String
-  phone            String
-  cellPhone        String
-  whatsapp         String
-  isWhatsapp       Boolean   @default(false)
-  hasNumber        Boolean   @default(true)
-  houseNumber      String
-  acceptTerm       Boolean
-
-  email            String   @unique
-  cpf              String   @unique
-  password_hash    String
-  isAuthenticated  Boolean  @default(false)
-
-  address          String
-  cep              String
-  city             String
-  state            String
-  neighborhood     String
-  complement       String?
-
-  birth_date       DateTime 
-  gender           Json     
-
-  created_at       DateTime @default(now())
-
-  // Relações um-para-muitos
-  Treatment        Treatment[]
-  Consultation     Consultation[]
+  id              Int            @id @default(autoincrement())
+  name            String
+  phone           String
+  cellPhone       String
+  whatsapp        String
+  isWhatsapp      Boolean        @default(false)
+  hasNumber       Boolean        @default(true)
+  houseNumber     String
+  acceptTerm      Boolean
+  email           String         @unique
+  cpf             String         @unique
+  password_hash   String
+  isAuthenticated Boolean        @default(false)
+  address         String
+  cep             String
+  city            String
+  state           String
+  neighborhood    String
+  complement      String?
+  birth_date      DateTime
+  gender          Json
+  created_at      DateTime       @default(now())
+  Consultation    Consultation[]
+  Treatment       Treatment[]
 
   @@map("pacients")
 }
 
 model Medic {
-  id         Int              @id @default(autoincrement())
-  name       String
-  cpf        String           @unique
-  phone      String
-  email      String           @unique
-  gender     String
-  city       String
-  state      String
-  specialty  MedicSpecialty[]
-  crm        MedicCrm[]
-  created_at DateTime         @default(now())
-
-  clinic   Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade, onUpdate: Cascade) // Muitos-para-um
-  clinicId Int
-
-  Treatment    Treatment[] // Relação um-para-muitos
-  Consultation Consultation[] // Um-para-muitos
+  id           Int              @id @default(autoincrement())
+  name         String
+  cpf          String           @unique
+  phone        String
+  email        String           @unique
+  gender       String
+  city         String
+  state        String
+  created_at   DateTime         @default(now())
+  clinicId     Int
+  crm          MedicCrm[]
+  specialty    MedicSpecialty[]
+  Consultation Consultation[]
+  clinic       Clinic           @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  Treatment    Treatment[]
 
   @@map("medics")
 }
@@ -125,53 +106,46 @@ model Medic {
 model MedicSpecialty {
   id        Int    @id @default(autoincrement())
   specialty String
-  medic     Medic  @relation(fields: [medicId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   medicId   Int
+  medic     Medic  @relation(fields: [medicId], references: [id], onDelete: Cascade)
 }
 
 model MedicCrm {
   id      Int    @id @default(autoincrement())
   number  String @unique
   state   String
-  medic   Medic  @relation(fields: [medicId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   medicId Int
+  medic   Medic  @relation(fields: [medicId], references: [id], onDelete: Cascade)
 }
 
 model Consultation {
-  id           Int      @id @default(autoincrement())
+  id           Int         @id @default(autoincrement())
   consult_time DateTime
-  created_at   DateTime @default(now())
-  updated_at   DateTime @default(now())
-
-  pacient   Pacient @relation(fields: [pacientId], references: [id], onDelete: Cascade, onUpdate: Cascade) // Muitos-para-um
-  pacientId Int
-
-  medic   Medic @relation(fields: [medicId], references: [id], onDelete: Cascade, onUpdate: Cascade) // Muitos-para-um
-  medicId Int
-
-  clinic   Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade, onUpdate: Cascade) // Muitos-para-um
-  clinicId Int
-
-  Treatment Treatment[] // Relação um-para-muitos
+  created_at   DateTime    @default(now())
+  updated_at   DateTime    @default(now())
+  pacientId    Int
+  medicId      Int
+  clinicId     Int
+  clinic       Clinic      @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  medic        Medic       @relation(fields: [medicId], references: [id], onDelete: Cascade)
+  pacient      Pacient     @relation(fields: [pacientId], references: [id], onDelete: Cascade)
+  Treatment    Treatment[]
 
   @@map("consultations")
 }
 
 model Treatment {
-  id          Int      @id @default(autoincrement())
-  description String
-  attached    String
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now())
-
-  pacient   Pacient @relation(fields: [pacientId], references: [id], onDelete: Cascade, onUpdate: Cascade) // Relação muitos-para-um
-  pacientId Int
-
-  medic   Medic @relation(fields: [medicId], references: [id], onDelete: Cascade, onUpdate: Cascade) // Relação muitos-para-um
-  medicId Int
-
-  consulation   Consultation @relation(fields: [consulationId], references: [id], onDelete: Cascade, onUpdate: Cascade) // Relação muitos-para-um
+  id            Int          @id @default(autoincrement())
+  description   String
+  attached      String
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @default(now())
+  pacientId     Int
+  medicId       Int
   consulationId Int
+  consulation   Consultation @relation(fields: [consulationId], references: [id], onDelete: Cascade)
+  medic         Medic        @relation(fields: [medicId], references: [id], onDelete: Cascade)
+  pacient       Pacient      @relation(fields: [pacientId], references: [id], onDelete: Cascade)
 
   @@map("treatments")
 }
@@ -180,7 +154,7 @@ model PasswordResetToken {
   id        Int      @id @default(autoincrement())
   token     String   @unique
   userId    Int
-  userType  String   // "pacient", "clinic"
+  userType  String
   expiresAt DateTime
   used      Boolean  @default(false)
   createdAt DateTime @default(now())

@@ -249,6 +249,8 @@ export async function setupSwagger(app: FastifyInstance) {
                   state: { type: 'string', example: 'SP' },
                   neighborhood: { type: 'string', example: 'Bela Vista' },
                   complement: { type: 'string', example: 'Sala 501', nullable: true },
+                  latitude: { type: 'number', example: -23.5505, nullable: true },
+                  longitude: { type: 'number', example: -46.6333, nullable: true },
                   isAuthenticated: { type: 'boolean', example: false },
                   createdAt: { type: 'string', format: 'date-time' }
                 }

@@ -42,6 +42,8 @@ export class InMemoryClinicsRepository implements ClinicsRepository {
       state: data.state,
       neighborhood: data.neighborhood,
       complement: data.complement || null,
+      latitude: data.latitude || null,
+      longitude: data.longitude || null,
       createdAt: new Date(),
     } as Clinic;
 

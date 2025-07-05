@@ -1,6 +1,7 @@
 import { Prisma, Clinic } from "@prisma/client";
 import { ClinicsRepository } from "../clinics-repository";
 import { prisma } from "@/lib/prisma";
+import { geocodeAddress } from "@/utils/geocoding/nominatim-service";
 
 export class PrismaClinicsRepository implements ClinicsRepository {
   async findById(id: number): Promise<Clinic | null> {
@@ -28,10 +29,32 @@ export class PrismaClinicsRepository implements ClinicsRepository {
   }
 
   async create(data: Prisma.ClinicCreateInput): Promise<Clinic> {
-    const clinic = await prisma.clinic.create({
-      data,
-    });
+    try {
+      const { latitude, longitude } = await geocodeAddress({
+        address: data.address,
+        cep: data.cep,
+        city: data.city,
+        state: data.state,
+        neighborhood: data.neighborhood,
+        houseNumber: data.houseNumber as string
+      });
 
-    return clinic;
+      const clinic = await prisma.clinic.create({
+        data: {
+          ...data,
+          latitude,
+          longitude
+        },
+      });
+
+      return clinic;
+    } catch (error) {
+      console.error('Erro ao geocodificar endereço:', error);
+      // Fallback: criar a clínica sem coordenadas se a geocodificação falhar
+      const clinic = await prisma.clinic.create({
+        data,
+      });
+      return clinic;
+    }
   }
 }

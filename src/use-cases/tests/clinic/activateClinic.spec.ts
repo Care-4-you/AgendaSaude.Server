@@ -52,6 +52,8 @@ describe("activateClinic", () => {
       state: "Clinic State",
       neighborhood: "Clinic Neighborhood",
       complement: "Clinic Complement",
+      latitude: -23.5505,
+      longitude: -46.6333,
       isAuthenticated: false,
       createdAt: new Date(),
     };

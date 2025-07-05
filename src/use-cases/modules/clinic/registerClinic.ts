@@ -28,6 +28,8 @@ interface IRegisterClinic {
   state: string;
   neighborhood: string;
   complement?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 interface IRegisterClinicResponse {
@@ -56,6 +58,8 @@ export class RegisterClinicUseCase {
     state,
     neighborhood,
     complement,
+    latitude,
+    longitude
   }: IRegisterClinic): Promise<IRegisterClinicResponse> => {
     const password_hash = await hashPassword(password);
 
@@ -95,6 +99,8 @@ export class RegisterClinicUseCase {
       neighborhood,
       complement,
       isAuthenticated: false,
+      latitude,
+      longitude
     });
 
     return {
