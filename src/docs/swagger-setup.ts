@@ -674,6 +674,93 @@ export async function setupSwagger(app: FastifyInstance) {
             }
           }
         },
+        '/clinics/{id}': {
+          get: {
+            summary: 'Obtém detalhes não sensíveis de uma clínica pelo ID',
+            tags: ['Clínicas'],
+            parameters: [
+              {
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: { type: 'integer' },
+                description: 'ID da clínica'
+              }
+            ],
+            responses: {
+              '200': {
+                description: 'Detalhes da clínica recuperados com sucesso',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        message: {
+                          type: 'string',
+                          example: 'Detalhes da clínica recuperados com sucesso.'
+                        },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            id: { type: 'integer', example: 1 },
+                            name: { type: 'string', example: 'Clínica Saúde Plena' },
+                            phone: { type: 'string', example: '1133334444' },
+                            cellPhone: { type: 'string', example: '11988889999' },
+                            whatsapp: { type: 'string', example: '11988889999' },
+                            email: { type: 'string', example: 'contato@clinica.com' },
+                            cnpj: { type: 'string', example: '78.653.910/0001-60' },
+                            address: { type: 'string', example: 'Av. Paulista, 1000' },
+                            cep: { type: 'string', example: '01310-100' },
+                            city: { type: 'string', example: 'São Paulo' },
+                            state: { type: 'string', example: 'SP' },
+                            neighborhood: { type: 'string', example: 'Bela Vista' },
+                            complement: { type: 'string', example: 'Sala 501' },
+                            specialty: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                properties: {
+                                  value: { type: 'string', example: 'cardiologia' },
+                                  label: { type: 'string', example: 'Cardiologia' }
+                                }
+                              }
+                            },
+                            healthInsurance: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                properties: {
+                                  value: { type: 'string', example: 'unimed' },
+                                  label: { type: 'string', example: 'Unimed' }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              '404': {
+                description: 'Clínica não encontrada',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              },
+              '500': {
+                description: 'Erro interno do servidor',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              }
+            }
+          }
+        },
         '/auth/password/request-reset': {
           post: {
             summary: 'Solicita redefinição de senha',
