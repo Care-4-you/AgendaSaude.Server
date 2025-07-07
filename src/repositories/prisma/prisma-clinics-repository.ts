@@ -57,4 +57,28 @@ export class PrismaClinicsRepository implements ClinicsRepository {
       return clinic;
     }
   }
+
+  async findByIdWithDetails(id: number) {
+    const clinic = await prisma.clinic.findUnique({
+      where: { id },
+      include: {
+        specialty: {
+          select: {
+            id: true,
+            value: true,
+            label: true,
+          },
+        },
+        healthInsurance: {
+          select: {
+            id: true,
+            value: true,
+            label: true,
+          },
+        },
+      },
+    });
+
+    return clinic;
+  }
 }

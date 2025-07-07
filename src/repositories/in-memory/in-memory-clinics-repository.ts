@@ -12,6 +12,23 @@ export class InMemoryClinicsRepository implements ClinicsRepository {
     return clinic || null;
   }
 
+  async findByIdWithDetails(id: number) {
+    const clinic = this.items.find((item) => item.id === id);
+
+    if (!clinic) {
+      return null;
+    }
+
+    const specialty = this.specialtyItems.filter(item => item.clinicId === id);
+    const healthInsurance = this.healthInsuranceItems.filter(item => item.clinicId === id);
+
+    return {
+      ...clinic,
+      specialty,
+      healthInsurance,
+    };
+  }
+
   async findByEmail(email: string): Promise<Clinic | null> {
     const clinic = this.items.find((item) => item.email === email);
     return clinic || null;
