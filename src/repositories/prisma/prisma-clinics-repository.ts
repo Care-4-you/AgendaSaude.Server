@@ -81,4 +81,13 @@ export class PrismaClinicsRepository implements ClinicsRepository {
 
     return clinic;
   }
+
+  async findAllWithDetails() {
+    return prisma.clinic.findMany({
+      include: {
+        specialty: { select: { id: true, value: true, label: true } },
+        healthInsurance: { select: { id: true, value: true, label: true } },
+      },
+    });
+  }
 }

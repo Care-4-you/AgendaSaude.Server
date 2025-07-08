@@ -548,6 +548,75 @@ export async function setupSwagger(app: FastifyInstance) {
                 }
               }
             }
+          },
+          get: {
+            summary: 'Lista todas as clínicas',
+            tags: ['Clínicas'],
+            description: 'Retorna uma lista de todas as clínicas cadastradas, exibindo apenas dados não sensíveis.',
+            responses: {
+              '200': {
+                description: 'Lista de clínicas retornada com sucesso',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        data: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            properties: {
+                              id: { type: 'integer', example: 1 },
+                              name: { type: 'string', example: 'Clínica Saúde Plena' },
+                              phone: { type: 'string', example: '1133334444' },
+                              cellPhone: { type: 'string', example: '11988889999' },
+                              whatsapp: { type: 'string', example: '11988889999' },
+                              email: { type: 'string', example: 'contato@clinica.com' },
+                              address: { type: 'string', example: 'Av. Paulista, 1000' },
+                              cep: { type: 'string', example: '01310-100' },
+                              city: { type: 'string', example: 'São Paulo' },
+                              state: { type: 'string', example: 'SP' },
+                              neighborhood: { type: 'string', example: 'Bela Vista' },
+                              complement: { type: 'string', example: 'Sala 501', nullable: true },
+                              specialty: {
+                                type: 'array',
+                                items: {
+                                  type: 'object',
+                                  properties: {
+                                    value: { type: 'string', example: 'cardiologia' },
+                                    label: { type: 'string', example: 'Cardiologia' }
+                                  }
+                                }
+                              },
+                              healthInsurance: {
+                                type: 'array',
+                                items: {
+                                  type: 'object',
+                                  properties: {
+                                    value: { type: 'string', example: 'unimed' },
+                                    label: { type: 'string', example: 'Unimed' }
+                                  }
+                                }
+                              },
+                              latitude: { type: 'number', example: -23.5505, nullable: true },
+                              longitude: { type: 'number', example: -46.6333, nullable: true }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              '500': {
+                description: 'Erro interno do servidor',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              }
+            }
           }
         },
         '/clinics/activate': {
@@ -628,7 +697,7 @@ export async function setupSwagger(app: FastifyInstance) {
                     }
                   }
                 }
-              }
+              },
             },
             responses: {
               '200': {

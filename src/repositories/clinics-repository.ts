@@ -10,4 +10,6 @@ export interface ClinicsRepository {
   create(data: Prisma.ClinicCreateInput): Promise<Clinic>;
 
   findByIdWithDetails(id: number): Promise<Clinic | null>;
+
+  findAllWithDetails(): Promise<any[]>;
 }

@@ -102,4 +102,16 @@ export class InMemoryClinicsRepository implements ClinicsRepository {
 
     return clinic;
   }
+
+  async findAllWithDetails() {
+    return this.items.map(clinic => {
+      const specialty = this.specialtyItems.filter(item => item.clinicId === clinic.id);
+      const healthInsurance = this.healthInsuranceItems.filter(item => item.clinicId === clinic.id);
+      return {
+        ...clinic,
+        specialty,
+        healthInsurance,
+      };
+    });
+  }
 }
