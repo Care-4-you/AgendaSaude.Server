@@ -5,16 +5,31 @@ import { Clinic } from "@prisma/client";
 
 interface IRegisterClinic {
   name: string;
-  specialty: string;
+  specialty: {
+    value: string;
+    label: string;
+  }[];
+  healthInsurance: {
+    value: string;
+    label: string;
+  }[];
   phone: string;
+  cellPhone: string;
+  whatsapp: string;
+  hasNumber: boolean;
+  houseNumber: string;
+  acceptTerm: boolean;
   email: string;
+  cnpj: string;
   password: string;
   address: string;
   cep: string;
   city: string;
   state: string;
   neighborhood: string;
-  complement: string | null;
+  complement?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 interface IRegisterClinicResponse {
@@ -27,8 +42,15 @@ export class RegisterClinicUseCase {
   execute = async ({
     name,
     specialty,
+    healthInsurance,
     phone,
+    cellPhone,
+    whatsapp,
+    hasNumber,
+    houseNumber,
+    acceptTerm,
     email,
+    cnpj,
     password,
     address,
     cep,
@@ -36,6 +58,8 @@ export class RegisterClinicUseCase {
     state,
     neighborhood,
     complement,
+    latitude,
+    longitude
   }: IRegisterClinic): Promise<IRegisterClinicResponse> => {
     const password_hash = await hashPassword(password);
 
@@ -45,11 +69,28 @@ export class RegisterClinicUseCase {
       throw new ClinicAlreadyExistsError();
     }
 
+    const clinicWithSameCnpj = await this.clinicsRepository.findByCnpj(cnpj);
+
+    if (clinicWithSameCnpj) {
+      throw new ClinicAlreadyExistsError();
+    }
+
     const clinic = await this.clinicsRepository.create({
       name,
-      specialty,
+      specialty: {
+        create: specialty
+      },
+      healthInsurance: {
+        create: healthInsurance
+      },
       phone,
+      cellPhone,
+      whatsapp,
+      hasNumber,
+      houseNumber,
+      acceptTerm,
       email,
+      cnpj,
       password_hash,
       address,
       cep,
@@ -57,6 +98,9 @@ export class RegisterClinicUseCase {
       state,
       neighborhood,
       complement,
+      isAuthenticated: false,
+      latitude,
+      longitude
     });
 
     return {

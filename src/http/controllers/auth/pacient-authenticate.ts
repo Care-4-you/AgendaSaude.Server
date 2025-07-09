@@ -23,7 +23,7 @@ export const pacientAuthenticate = async (
     });
 
     const token = await reply.jwtSign(
-      {},
+      { role: "pacient" },
       {
         sign: {
           sub: pacient.id.toString(),
@@ -31,7 +31,10 @@ export const pacientAuthenticate = async (
       },
     );
 
-    return reply.status(200).send({ token });
+    return reply.status(200).send({
+      token,
+      role: "pacient"
+    });
   } catch (error) {
     if (error instanceof InvalidCredentialsError) {
       return reply.status(400).send({ message: error.message });

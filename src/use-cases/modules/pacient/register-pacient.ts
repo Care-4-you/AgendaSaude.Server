@@ -7,13 +7,20 @@ import { Pacient } from "@prisma/client";
 
 interface IRegisterPacient {
   name: string;
-  address: string;
   phone: string;
+  cellPhone: string;
+  whatsapp: string;
+  isWhatsapp: boolean;
+  hasNumber: boolean;
+  houseNumber: string;
+  acceptTerm: boolean;
+
   email: string;
   password: string;
-  birth_date: string;
+  birth_date: Date | string;
   cpf: string;
-  gender: string;
+  gender: { value: string; label: string };
+  address: string;
   cep: string;
   city: string;
   state: string;
@@ -26,62 +33,73 @@ interface IRegisterPacientResponse {
 }
 
 export class RegisterPacientUseCase {
-  constructor(private pacientRepository: PacientsRepository) {}
+  constructor(private pacientRepository: PacientsRepository) { }
 
   execute = async ({
     name,
-    address,
     phone,
+    cellPhone,
+    whatsapp,
+    isWhatsapp,
+    hasNumber,
+    houseNumber,
+    acceptTerm,
     email,
     password,
     birth_date,
     cpf,
     gender,
+    address,
     cep,
-    state,
     city,
-    complement,
+    state,
     neighborhood,
+    complement,
   }: IRegisterPacient): Promise<IRegisterPacientResponse> => {
     const password_hash = await hashPassword(password);
 
-    const pacientWithSameEmail =
-      await this.pacientRepository.findByEmail(email);
-
-    if (pacientWithSameEmail) {
+    const byEmail = await this.pacientRepository.findByEmail(email);
+    if (byEmail) {
       throw new PacientAlreadyExistsError("Pacient e-mail already exists!");
     }
 
-    const pacientWithSameCpf = await this.pacientRepository.findByCpf(cpf);
-
-    if (pacientWithSameCpf) {
+    const byCpf = await this.pacientRepository.findByCpf(cpf);
+    if (byCpf) {
       throw new PacientAlreadyExistsError("Pacient CPF already exists!");
     }
 
-    const birthDate = StringToDate(birth_date);
-
-    if (!birthDate) {
+    let birthDateObj: Date | null;
+    if (birth_date instanceof Date) {
+      birthDateObj = birth_date;
+    } else {
+      birthDateObj = StringToDate(birth_date);
+    }
+    if (!birthDateObj) {
       throw new InvalidDateError();
     }
 
     const pacient = await this.pacientRepository.create({
       name,
-      address,
       phone,
+      cellPhone,
+      whatsapp,
+      isWhatsapp,
+      hasNumber,
+      houseNumber,
+      acceptTerm,
       email,
       password_hash,
-      birth_date: birthDate,
+      birth_date: birthDateObj,
       cpf,
-      gender,
+      gender,    
+      address,
       cep,
-      state,
       city,
-      complement,
+      state,
       neighborhood,
+      complement,
     });
 
-    return {
-      pacient,
-    };
+    return { pacient };
   };
 }

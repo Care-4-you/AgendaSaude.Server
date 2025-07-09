@@ -2,12 +2,18 @@
 
 Back-end/servidor da aplicação Care4You.
 
-## RFs (Requisitos funcionais) 
+# Documentação
+http://localhost:8080/docs
+> Nota: Este link só funciona quando o servidor está rodando localmente na porta 8080.
+
+## RFs (Requisitos funcionais)
 
 ### Pacientes
 
 - [x] Deve ser possível o paciente se cadastrar no sistema
 - [x] Deve ser possível o paciente se autentificar
+- [] Deve ser possível o paciente ativar sua conta via e-mail
+- [] Deve ser possível o paciente mudar e/ou resgatar sua conta via e-mail
 - [] Deve ser possível agendar uma consulta
 - [] Deve ser possível o paciente escolher os horários para consultas
 - [] Deve ser possível o paciente visualizar as clinicas com disponibilidade de seu convenio
@@ -21,7 +27,8 @@ Back-end/servidor da aplicação Care4You.
 
 ### Pacientes
 
-- [] Não podem ter um email duplicado para cadastro
+- [x] Não podem ter um email duplicado para cadastro
+- [x] Não podem ter um CPF duplicado para cadastro
 
 ## RNFs (Requisitos não-funcionais)
 
