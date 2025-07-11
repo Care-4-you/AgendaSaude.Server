@@ -88,10 +88,11 @@ model Medic {
   name            String
   cpf             String           @unique
   phone           String
-  whatsapp        String?
+  whatsapp        String
   email           String           @unique
   password_hash   String
   isAuthenticated Boolean          @default(false)
+  isWhatsapp      Boolean          @default(false)
   photo           String?
   gender          String
   city            String
