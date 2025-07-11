@@ -1,0 +1,1 @@
+type UserType = 'clinics' | 'pacients' | 'medics';
