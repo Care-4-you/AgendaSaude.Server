@@ -549,13 +549,15 @@ export async function setupSwagger(app: FastifyInstance) {
               }
             }
           },
+        },
+        '/clinics/active': {
           get: {
-            summary: 'Lista todas as clínicas',
+            summary: 'Lista todas as clínicas ativas',
             tags: ['Clínicas'],
-            description: 'Retorna uma lista de todas as clínicas cadastradas, exibindo apenas dados não sensíveis.',
+            description: 'Retorna uma lista de todas as clínicas que estão ativas (autenticadas), exibindo apenas dados não sensíveis.',
             responses: {
               '200': {
-                description: 'Lista de clínicas retornada com sucesso',
+                description: 'Lista de clínicas ativas retornada com sucesso',
                 content: {
                   'application/json': {
                     schema: {
