@@ -1,15 +1,15 @@
-import { Medic, Prisma } from "@prisma/client";
+import { Prisma, Medic } from "@prisma/client";
 
-export interface MedicsRepository {
+export interface ClinicsRepository {
   findById(id: number): Promise<Medic | null>;
 
   findByEmail(email: string): Promise<Medic | null>;
 
-  findByCpf(cpf: string): Promise<Medic | null>;
+  findByCnpj(cnpj: string): Promise<Medic | null>;
 
-  findByCrm(crm: string): Promise<Medic | null>;
+  create(data: Prisma.ClinicCreateInput): Promise<Medic>;
 
-  create(data: Prisma.MedicCreateInput): Promise<Medic>;
+  findByIdWithDetails(id: number): Promise<Medic | null>;
 
-  save(Medic: Medic): Promise<Medic>;
+  findAllWithDetails(): Promise<any[]>;
 }
