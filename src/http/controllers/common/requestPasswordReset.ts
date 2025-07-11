@@ -1,44 +1,36 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { sendResetPasswordEmail } from "@/utils/emails/send-reset-password-email";
 import jwt from "jsonwebtoken";
 import { env } from "@/env";
 import { EmailNotFoundError } from "@/use-cases/errors/email/email-notFound-error";
+import { sendResetPasswordEmail } from "@/utils/email/sendResetPasswordEmail";
+
+const requestPasswordResetSchema = z.object({
+  email: z.string().email(),
+});
 
 export async function requestPasswordReset(request: FastifyRequest, reply: FastifyReply) {
-  const requestPasswordResetSchema = z.object({
-    email: z.string().email(),
-  });
-
   try {
     const { email } = requestPasswordResetSchema.parse(request.body);
 
-    let user = null;
-    let userName = "";
-    let role = "";
+    const [pacient, medic, clinic] = await Promise.all([
+      prisma.pacient.findUnique({ where: { email } }),
+      prisma.medic.findUnique({ where: { email } }),
+      prisma.clinic.findUnique({ where: { email } })
+    ]);
 
-    const pacient = await prisma.pacient.findUnique({
-      where: { email }
-    });
-
-    if (pacient) {
+    let user, role;
+    if (medic) {
+      user = medic;
+      role = "medic";
+    } else if (clinic) {
+      user = clinic;
+      role = "clinic";
+    } else if (pacient) {
       user = pacient;
-      userName = pacient.name;
       role = "pacient";
     } else {
-      const clinic = await prisma.clinic.findUnique({
-        where: { email }
-      });
-
-      if (clinic) {
-        user = clinic;
-        userName = clinic.name;
-        role = "clinic";
-      }
-    }
-
-    if (!user) {
       throw new EmailNotFoundError();
     }
 
@@ -51,9 +43,7 @@ export async function requestPasswordReset(request: FastifyRequest, reply: Fasti
         version: Date.now(),
       },
       env.JWT_SECRET,
-      {
-        expiresIn: "4h",
-      }
+      { expiresIn: "4h" }
     );
 
     await prisma.passwordResetToken.create({
@@ -66,21 +56,29 @@ export async function requestPasswordReset(request: FastifyRequest, reply: Fasti
       }
     });
 
-    await sendResetPasswordEmail(
-      email,
-      userName,
-      resetToken,
-      role
-    );
+    const getEmailPath = (role: string): UserType => {
+      switch (role) {
+        case "medic":
+          return "medics";
+        case "clinic":
+          return "clinics";
+        case "pacient":
+          return "pacients";
+        default:
+          throw new Error("Invalid user role");
+      }
+    }
+
+    const emailPath: UserType = getEmailPath(role);
+    await sendResetPasswordEmail(user.email, user.name, resetToken, emailPath);
 
     return reply.status(200).send({
       message: "Link de redefinição de senha enviado com sucesso. Por favor, verifique seu email."
     });
+
   } catch (error: any) {
     if (error instanceof EmailNotFoundError) {
-      return reply.status(404).send({
-        message: error.message
-      });
+      return reply.status(404).send({ message: error.message });
     }
 
     if (error instanceof z.ZodError) {

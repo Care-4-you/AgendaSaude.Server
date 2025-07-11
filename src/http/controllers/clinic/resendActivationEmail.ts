@@ -1,9 +1,9 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { sendActivationEmail } from "@/utils/emails/send-activation-email";
 import jwt from "jsonwebtoken";
 import { env } from "@/env";
+import { sendActivationEmail } from "@/utils/email/sendActivationEmail";
 
 export const resendActivationEmail = async (
   request: FastifyRequest,
@@ -46,7 +46,8 @@ export const resendActivationEmail = async (
     await sendActivationEmail(
       clinic.email,
       clinic.name,
-      activationToken
+      activationToken,
+      "clinics"
     );
 
     return reply.status(200).send({

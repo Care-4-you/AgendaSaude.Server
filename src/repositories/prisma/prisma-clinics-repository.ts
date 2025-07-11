@@ -84,6 +84,9 @@ export class PrismaClinicsRepository implements ClinicsRepository {
 
   async findAllWithDetails() {
     return prisma.clinic.findMany({
+      where: {
+        isAuthenticated: true,
+      },
       include: {
         specialty: { select: { id: true, value: true, label: true } },
         healthInsurance: { select: { id: true, value: true, label: true } },

@@ -3,9 +3,9 @@ import { makeClinicUseCase } from "@/use-cases/factories/clinic/make-clinic-use-
 import { cnpjFormatRegex, isValidCNPJ } from "@/utils/cnpjValidFormated";
 import { FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
-import { sendActivationEmail } from "@/utils/emails/send-activation-email";
 import { env } from "@/env";
 import jwt from "jsonwebtoken";
+import { sendActivationEmail } from "@/utils/email/sendActivationEmail";
 
 export const registerClinic = async (
   request: FastifyRequest,
@@ -116,7 +116,8 @@ export const registerClinic = async (
     await sendActivationEmail(
       clinic.email,
       clinic.name,
-      activationToken
+      activationToken,
+      "clinics"
     );
 
     return reply.status(201).send({
