@@ -98,8 +98,8 @@ model Medic {
   city            String
   state           String
   created_at      DateTime         @default(now())
-  clinicId        Int
-  clinic          Clinic           @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  clinicId        Int?
+  clinic          Clinic?           @relation(fields: [clinicId], references: [id], onDelete: Cascade)
   crm             MedicCrm[]
   specialty       MedicSpecialty[]
   Consultation    Consultation[]
@@ -117,7 +117,7 @@ model MedicSpecialty {
 
 model MedicCrm {
   id      Int    @id @default(autoincrement())
-  number  String @unique
+  number  String 
   state   String
   medicId Int
   medic   Medic  @relation(fields: [medicId], references: [id], onDelete: Cascade)
