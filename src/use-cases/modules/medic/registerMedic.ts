@@ -1,23 +1,26 @@
+import { Medic } from "@prisma/client";
 import { MedicsRepository } from "@/repositories/medics-repository";
 import { hashPassword } from "@/utils/hash-password";
-import { Medic } from "@prisma/client";
-import { MedicAlreadyExistsError, MedicCrmAlreadyExistsError } from "@/use-cases/errors/medic/medic-already-exists-error";
-import { MaxCrmExceededError, DuplicateCrmInRequestError, InvalidCrmFormatError } from "@/use-cases/errors/medic/medic-crm-error";
 
-interface IRegisterMedic {
+import { InvalidCrmFormatError } from "@/use-cases/errors/medic/medic-crm-error";
+
+interface IRegisterMedicFromFront {
   name: string;
-  cpf: string;
   phone: string;
   whatsapp: string;
+  cellPhone: string;
+  councils: { value: string; label: string };
+  councilsUF: { value: string; label: string };
+  councilsNumber: string;
+  gender: { value: string; label: string };
+  specialty: { value: string; label: string };
   email: string;
   password: string;
-  gender: string;
-  city: string;
-  state: string;
-  photo?: string | null;
-  specialty: string[];
-  crm: { number: string; state: string }[];
-  clinicId: number | null;
+  passwordConfirmation: string;
+  acceptTerm: boolean;
+  isWhatsapp: boolean;
+  city?: string;
+  state?: string;
 }
 
 interface IRegisterMedicResponse {
@@ -25,174 +28,109 @@ interface IRegisterMedicResponse {
 }
 
 export class RegisterMedicUseCase {
-  private static readonly MAX_CRM_COUNT = 2;
-  private static readonly CRM_PATTERN = /^\d{4,6}$/; // CRM geralmente tem 4-6 dígitos
   private static readonly STATE_PATTERN = /^[A-Z]{2}$/;
 
   constructor(private medicsRepository: MedicsRepository) { }
 
-  async execute({
-    name,
-    cpf,
-    phone,
-    whatsapp,
-    email,
-    password,
-    gender,
-    city,
-    state,
-    photo,
-    specialty,
-    crm,
-    clinicId,
-  }: IRegisterMedic): Promise<IRegisterMedicResponse> {
-    // 1. Validações básicas de entrada
-    this.validateRequiredFields({ name, cpf, phone, email, password, crm });
+  async execute(data: IRegisterMedicFromFront): Promise<IRegisterMedicResponse> {
+    // Normalizar números para só dígitos
+    data.phone = this.normalizePhone(data.phone);
+    data.whatsapp = this.normalizePhone(data.whatsapp);
+    data.cellPhone = this.normalizePhone(data.cellPhone);
+    data.councilsNumber = data.councilsNumber.trim();
 
-    // 2. Valida quantidade máxima de CRMs
-    if (crm.length > RegisterMedicUseCase.MAX_CRM_COUNT) {
-      throw new MaxCrmExceededError(RegisterMedicUseCase.MAX_CRM_COUNT);
+    this.validateRequiredFields(data);
+    this.validatePasswordConfirmation(data.password, data.passwordConfirmation);
+    if (!data.acceptTerm) {
+      throw new Error("Você deve aceitar os termos");
     }
 
-    if (crm.length === 0) {
-      throw new InvalidCrmFormatError();
-    }
+    const crmNormalized = this.normalizeAndValidateCrm([
+      { number: data.councilsNumber, state: data.councilsUF.value },
+    ]);
 
-    // 3. Normaliza e valida formato dos CRMs
-    const normalizedCrm = this.normalizeAndValidateCrm(crm);
+    const password_hash = await hashPassword(data.password);
 
-    // 4. Verifica CRMs duplicados no próprio array enviado
-    this.checkDuplicateCrmsInRequest(normalizedCrm);
-
-    // 5. Criptografa senha
-    const password_hash = await hashPassword(password);
-
-    // 6. Verifica se email já existe
-    const medicWithSameEmail = await this.medicsRepository.findByEmail(email);
-    if (medicWithSameEmail) {
-      throw new MedicAlreadyExistsError('email');
-    }
-
-    // 7. Verifica se CPF já existe
-    const medicWithSameCpf = await this.medicsRepository.findByCpf(cpf);
-    if (medicWithSameCpf) {
-      throw new MedicAlreadyExistsError('cpf');
-    }
-
-    // 8. Verifica CRM duplicado no banco (número + estado)
-    await this.checkExistingCrmsInDatabase(normalizedCrm);
-
-    // 9. Cria o médico no banco
     const medic = await this.medicsRepository.create({
-      name,
-      cpf,
-      phone,
-      whatsapp,
-      email,
+      name: data.name.trim(),
+      phone: data.phone,
+      whatsapp: data.whatsapp,
+      cellPhone: data.cellPhone,
+      email: data.email.trim(),
       password_hash,
-      gender,
-      city,
-      state,
+      gender: data.gender.value.trim(),
       isAuthenticated: false,
-      isWhatsapp: false,
-      photo: photo || null,
-      clinic: clinicId
-        ? {
-          connect: { id: clinicId },
-        }
-        : undefined,
+      isWhatsapp: data.isWhatsapp,
+      photo: null,
       specialty: {
-        create: specialty.map((s) => ({ specialty: s })),
+        create: [{ specialty: data.specialty.value.trim() }],
       },
       crm: {
-        create: normalizedCrm,
+        create: crmNormalized,
       },
+      city: data.city?.trim() ?? null,
+      state: data.state?.trim() ?? null,
     });
 
     return { medic };
   }
 
-  private validateRequiredFields(fields: {
-    name: string;
-    cpf: string;
-    phone: string;
-    email: string;
-    password: string;
-    crm: { number: string; state: string }[];
-  }): void {
-    const { name, cpf, phone, email, password, crm } = fields;
+  private normalizePhone(phone: string): string {
+    // Remove tudo que não seja número, exemplo: "(31) 90871-9969" vira "31908719969"
+    return phone.replace(/\D/g, "");
+  }
 
-    if (!name?.trim()) {
-      throw new Error('Name is required');
-    }
+  private validateRequiredFields(data: IRegisterMedicFromFront) {
+    if (!data.name?.trim()) throw new Error("Nome é obrigatório");
 
-    if (!cpf?.trim()) {
-      throw new Error('CPF is required');
-    }
+    // Agora phone, whatsapp e cellPhone devem ser só dígitos após normalização
+    if (!data.phone || !/^\d+$/.test(data.phone))
+      throw new Error("Telefone inválido, deve conter apenas números");
+    if (!data.whatsapp || !/^\d+$/.test(data.whatsapp))
+      throw new Error("WhatsApp inválido, deve conter apenas números");
+    if (!data.cellPhone || !/^\d+$/.test(data.cellPhone))
+      throw new Error("Celular inválido, deve conter apenas números");
 
-    if (!phone?.trim()) {
-      throw new Error('Phone is required');
-    }
+    if (!data.email?.trim()) throw new Error("Email é obrigatório");
+    if (!data.password?.trim()) throw new Error("Senha é obrigatória");
+    if (!data.passwordConfirmation?.trim())
+      throw new Error("Confirmação de senha é obrigatória");
+    if (!data.councilsNumber?.trim())
+      throw new Error("Número do conselho é obrigatório");
+    if (!data.councilsUF?.value?.trim())
+      throw new Error("UF do conselho é obrigatório");
+    if (!data.gender?.value?.trim()) throw new Error("Gênero é obrigatório");
+    if (!data.specialty?.value?.trim())
+      throw new Error("Especialidade é obrigatória");
 
-    if (!email?.trim()) {
-      throw new Error('Email is required');
-    }
-
-    if (!password?.trim()) {
-      throw new Error('Password is required');
-    }
-
-    if (!crm || !Array.isArray(crm)) {
-      throw new Error('CRM data is required');
+    // councilsNumber só dígitos
+    if (!/^\d+$/.test(data.councilsNumber)) {
+      throw new InvalidCrmFormatError(
+        data.councilsNumber,
+        data.councilsUF.value
+      );
     }
   }
 
-  private normalizeAndValidateCrm(crm: { number: string; state: string }[]): { number: string; state: string }[] {
-    return crm.map((crmItem) => {
-      const normalizedNumber = crmItem.number?.trim();
-      const normalizedState = crmItem.state?.trim().toUpperCase();
+  private validatePasswordConfirmation(password: string, confirmation: string) {
+    if (password !== confirmation) {
+      throw new Error("Senha e confirmação de senha não coincidem");
+    }
+  }
 
-      // Valida formato do número do CRM
-      if (!normalizedNumber || !RegisterMedicUseCase.CRM_PATTERN.test(normalizedNumber)) {
-        throw new InvalidCrmFormatError(normalizedNumber, normalizedState);
+  private normalizeAndValidateCrm(
+    crm: { number: string; state: string }[]
+  ): { number: string; state: string }[] {
+    return crm.map((item) => {
+      const number = item.number.trim();
+      const state = item.state.trim().toUpperCase();
+
+      if (!RegisterMedicUseCase.STATE_PATTERN.test(state)) {
+        throw new InvalidCrmFormatError(number, state);
       }
 
-      // Valida formato do estado (2 letras maiúsculas)
-      if (!normalizedState || !RegisterMedicUseCase.STATE_PATTERN.test(normalizedState)) {
-        throw new InvalidCrmFormatError(normalizedNumber, normalizedState);
-      }
-
-      return {
-        number: normalizedNumber,
-        state: normalizedState
-      };
+      return { number, state };
     });
   }
 
-  private checkDuplicateCrmsInRequest(crm: { number: string; state: string }[]): void {
-    const crmSet = new Set<string>();
-
-    for (const crmItem of crm) {
-      const key = `${crmItem.number}-${crmItem.state}`;
-
-      if (crmSet.has(key)) {
-        throw new DuplicateCrmInRequestError(crmItem.number, crmItem.state);
-      }
-
-      crmSet.add(key);
-    }
-  }
-
-  private async checkExistingCrmsInDatabase(crm: { number: string; state: string }[]): Promise<void> {
-    for (const crmItem of crm) {
-      const crmExists = await this.medicsRepository.findByCrmNumberAndState(
-        crmItem.number,
-        crmItem.state
-      );
-
-      if (crmExists) {
-        throw new MedicCrmAlreadyExistsError(crmItem.number, crmItem.state);
-      }
-    }
-  }
 }

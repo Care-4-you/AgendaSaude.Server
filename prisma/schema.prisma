@@ -86,20 +86,21 @@ model Pacient {
 model Medic {
   id              Int              @id @default(autoincrement())
   name            String
-  cpf             String           @unique
+  cellPhone       String?
+  cpf             String?          @unique
   phone           String
   whatsapp        String
-  email           String           @unique
+  email           String
   password_hash   String
   isAuthenticated Boolean          @default(false)
   isWhatsapp      Boolean          @default(false)
   photo           String?
   gender          String
-  city            String
-  state           String
+  city            String?          // mudou de obrigatório para opcional
+  state           String?          // idem
   created_at      DateTime         @default(now())
   clinicId        Int?
-  clinic          Clinic?           @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  clinic          Clinic?          @relation(fields: [clinicId], references: [id], onDelete: Cascade)
   crm             MedicCrm[]
   specialty       MedicSpecialty[]
   Consultation    Consultation[]
@@ -107,6 +108,7 @@ model Medic {
 
   @@map("medics")
 }
+
 
 model MedicSpecialty {
   id        Int    @id @default(autoincrement())
