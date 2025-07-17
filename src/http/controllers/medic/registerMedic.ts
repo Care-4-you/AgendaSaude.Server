@@ -1,5 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { z, ZodError } from "zod";
+import jwt from "jsonwebtoken";
+import { env } from "@/env";
 
 import { makeMedicsUseCase } from "@/use-cases/factories/medic/make-medic-use-case";
 import {
@@ -11,6 +13,7 @@ import {
   DuplicateCrmInRequestError,
   InvalidCrmFormatError,
 } from "@/use-cases/errors/medic/medic-crm-error";
+import { sendActivationEmail } from "@/utils/email/sendActivationEmail";
 
 export const registerMedic = async (
   request: FastifyRequest,
@@ -86,8 +89,28 @@ export const registerMedic = async (
 
     const { medic } = await registerMedicUseCase.execute(dataToExecute);
 
+    // Gerar token de ativação
+    const activationToken = jwt.sign(
+      {
+        email: medic.email,
+        type: "medicActivation"
+      },
+      env.JWT_SECRET,
+      {
+        expiresIn: "24h",
+      }
+    );
+
+    // Enviar email de ativação
+    await sendActivationEmail(
+      medic.email,
+      medic.name,
+      activationToken,
+      "medics"
+    );
+
     return reply.status(201).send({
-      message: "Médico registrado com sucesso!",
+      message: "Médico registrado com sucesso! Verifique seu email para ativar sua conta.",
       data: {
         ...medic,
         password_hash: undefined,

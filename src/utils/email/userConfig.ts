@@ -1,19 +1,21 @@
+import { env } from "@/env";
+
 export const USER_CONFIG = {
   clinics: {
-    activationPort: 8080,
-    resetPort: 3000,
+    activationPort: env.PORT,
+    resetPort: env.PORT,
     greeting: 'clínica',
     activationPath: '/clinics/activate'
   },
   pacients: {
-    activationPort: 3000,
-    resetPort: 3000,
+    activationPort: env.PORT,
+    resetPort: env.PORT,
     greeting: 'paciente',
     activationPath: '/pacients/activate'
   },
   medics: {
-    activationPort: 3000,
-    resetPort: 3000,
+    activationPort: env.PORT,
+    resetPort: env.PORT,
     greeting: 'médico(a)',
     activationPath: '/medics/activate'
   }
