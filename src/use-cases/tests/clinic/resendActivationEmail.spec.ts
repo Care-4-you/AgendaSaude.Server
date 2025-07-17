@@ -17,7 +17,7 @@ const { prismaMock } = vi.hoisted(() => ({
 vi.mock('@/lib/prisma', () => ({
   prisma: prismaMock,
 }));
-vi.mock("@/utils/emails/send-activation-email");
+vi.mock("@/utils/email/sendActivationEmail");
 vi.mock("jsonwebtoken");
 vi.mock("@/env", () => ({
   env: {
@@ -84,7 +84,8 @@ describe("resendActivationEmail", () => {
     expect(sendActivationEmail).toHaveBeenCalledWith(
       mockClinic.email,
       mockClinic.name,
-      "new-token"
+      "new-token",
+      "clinics"
     );
 
     expect(reply.status).toHaveBeenCalledWith(200);

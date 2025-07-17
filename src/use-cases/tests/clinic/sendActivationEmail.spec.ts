@@ -116,6 +116,6 @@ describe("sendActivationEmail", () => {
     const result = await sendActivationEmail(email, clinicName, activationToken, "clinics");
 
     expect(result).toBe(true);
-    expect(consoleSpy).toHaveBeenCalledWith(`Email de ativação enviado para: ${email}`);
+    expect(consoleSpy).toHaveBeenCalledWith(`Email de ativação enviado para: ${email} (clinics)`);
   });
 });
