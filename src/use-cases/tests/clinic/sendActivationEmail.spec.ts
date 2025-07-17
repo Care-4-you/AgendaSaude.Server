@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import { env } from "@/env";
-import { sendActivationEmail } from "@/utils/emails/send-activation-email";
+import { sendActivationEmail } from "@/utils/email/sendActivationEmail";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 vi.mock("nodemailer");
@@ -22,7 +22,7 @@ describe("sendActivationEmail", () => {
     const clinicName = "Test Clinic";
     const activationToken = "test-token";
 
-    await sendActivationEmail(email, clinicName, activationToken);
+    await sendActivationEmail(email, clinicName, activationToken, "clinics");
     expect(sendMailMock).toHaveBeenCalled();
 
     expect(sendMailMock).toHaveBeenCalledWith({
@@ -45,7 +45,7 @@ describe("sendActivationEmail", () => {
     const clinicName = "Test Clinic";
     const activationToken = "test-token";
 
-    await expect(sendActivationEmail(email, clinicName, activationToken))
+    await expect(sendActivationEmail(email, clinicName, activationToken, "clinics"))
       .rejects.toThrow("Failed to send activation email");
   });
 
@@ -60,7 +60,7 @@ describe("sendActivationEmail", () => {
     const activationToken = "test-token";
     const expectedLink = `http://localhost:8080/clinics/activate?token=${activationToken}`;
 
-    await sendActivationEmail(email, clinicName, activationToken);
+    await sendActivationEmail(email, clinicName, activationToken, "clinics");
 
     const mailOptions = sendMailMock.mock.calls[0][0];
     expect(mailOptions.html).toContain(expectedLink);
@@ -75,7 +75,7 @@ describe("sendActivationEmail", () => {
     const clinicName = "Test Clinic";
     const activationToken = "test-token";
 
-    await sendActivationEmail(email, clinicName, activationToken);
+    await sendActivationEmail(email, clinicName, activationToken, "clinics");
 
     const mailOptions = sendMailMock.mock.calls[0][0];
     expect(mailOptions.html).toContain(clinicName);
@@ -90,7 +90,7 @@ describe("sendActivationEmail", () => {
     const clinicName = "Test Clinic";
     const activationToken = "test-token";
 
-    await sendActivationEmail(email, clinicName, activationToken);
+    await sendActivationEmail(email, clinicName, activationToken, "clinics");
 
     expect(nodemailer.createTransport).toHaveBeenCalledWith({
       service: env.EMAIL_SERVICE,
@@ -113,7 +113,7 @@ describe("sendActivationEmail", () => {
     const clinicName = "Test Clinic";
     const activationToken = "test-token";
 
-    const result = await sendActivationEmail(email, clinicName, activationToken);
+    const result = await sendActivationEmail(email, clinicName, activationToken, "clinics");
 
     expect(result).toBe(true);
     expect(consoleSpy).toHaveBeenCalledWith(`Email de ativação enviado para: ${email}`);

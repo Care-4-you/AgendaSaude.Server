@@ -1,4 +1,4 @@
-import { sendActivationEmail } from "@/utils/emails/send-activation-email";
+import { sendActivationEmail } from "@/utils/email/sendActivationEmail";
 import jwt from "jsonwebtoken";
 import { FastifyRequest, FastifyReply } from "fastify";
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -45,6 +45,8 @@ const mockClinic: Clinic = {
   complement: "Clinic Complement",
   isAuthenticated: false,
   createdAt: new Date(),
+  latitude: -23.550520,
+  longitude: -46.633308,
 };
 
 describe("resendActivationEmail", () => {

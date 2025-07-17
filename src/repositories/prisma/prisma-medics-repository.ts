@@ -10,7 +10,7 @@ export class PrismaMedicsRepository implements MedicsRepository {
   }
 
   async findByEmail(email: string): Promise<Medic | null> {
-    return await prisma.medic.findUnique({
+    return await prisma.medic.findFirst({
       where: { email },
     });
   }
