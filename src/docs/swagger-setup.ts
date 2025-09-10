@@ -549,13 +549,15 @@ export async function setupSwagger(app: FastifyInstance) {
               }
             }
           },
+        },
+        '/clinics/active': {
           get: {
-            summary: 'Lista todas as clínicas',
+            summary: 'Lista todas as clínicas ativas',
             tags: ['Clínicas'],
-            description: 'Retorna uma lista de todas as clínicas cadastradas, exibindo apenas dados não sensíveis.',
+            description: 'Retorna uma lista de todas as clínicas que estão ativas (autenticadas), exibindo apenas dados não sensíveis.',
             responses: {
               '200': {
-                description: 'Lista de clínicas retornada com sucesso',
+                description: 'Lista de clínicas ativas retornada com sucesso',
                 content: {
                   'application/json': {
                     schema: {
@@ -901,6 +903,300 @@ export async function setupSwagger(app: FastifyInstance) {
               },
               '400': {
                 description: 'Token inválido ou dados de entrada incorretos',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              },
+              '500': {
+                description: 'Erro interno do servidor',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              }
+            }
+          }
+        },
+        '/pacients/activate': {
+          get: {
+            summary: 'Ativa conta de um paciente',
+            tags: ['Pacientes'],
+            parameters: [
+              {
+                name: 'token',
+                in: 'query',
+                required: true,
+                schema: { type: 'string' },
+                description: 'Token de ativação'
+              }
+            ],
+            responses: {
+              '200': {
+                description: 'Conta do paciente ativada com sucesso',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        message: { type: 'string', example: 'Patient account activated successfully.' }
+                      }
+                    }
+                  }
+                }
+              },
+              '400': {
+                description: 'Token inválido',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              },
+              '401': {
+                description: 'Token expirado',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              },
+              '404': {
+                description: 'Paciente não encontrado',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              },
+              '500': {
+                description: 'Erro interno do servidor',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              }
+            }
+          }
+        },
+        '/medics': {
+          post: {
+            summary: 'Cadastra um novo médico',
+            tags: ['Médicos'],
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/MedicRegister' }
+                }
+              }
+            },
+            responses: {
+              '201': {
+                description: 'Médico cadastrado com sucesso',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/MedicResponse' }
+                  }
+                }
+              },
+              '400': {
+                description: 'Erro de validação',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/ValidationError' }
+                  }
+                }
+              },
+              '409': {
+                description: 'Médico já existe',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              },
+              '500': {
+                description: 'Erro interno do servidor',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              }
+            }
+          },
+          get: {
+            summary: 'Verifica CRM e estado de um médico',
+            tags: ['Médicos'],
+            parameters: [
+              {
+                name: 'crm',
+                in: 'query',
+                required: true,
+                schema: { type: 'string' },
+                description: 'Número do CRM'
+              },
+              {
+                name: 'state',
+                in: 'query',
+                required: true,
+                schema: { type: 'string' },
+                description: 'Estado do CRM'
+              }
+            ],
+            responses: {
+              '200': {
+                description: 'CRM verificado com sucesso',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        valid: { type: 'boolean', example: true },
+                        message: { type: 'string', example: 'CRM válido' }
+                      }
+                    }
+                  }
+                }
+              },
+              '400': {
+                description: 'Parâmetros inválidos',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/ValidationError' }
+                  }
+                }
+              },
+              '404': {
+                description: 'CRM não encontrado',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              },
+              '500': {
+                description: 'Erro interno do servidor',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              }
+            }
+          }
+        },
+        '/medics/activate': {
+          get: {
+            summary: 'Ativa conta de um médico',
+            tags: ['Médicos'],
+            parameters: [
+              {
+                name: 'token',
+                in: 'query',
+                required: true,
+                schema: { type: 'string' },
+                description: 'Token de ativação'
+              }
+            ],
+            responses: {
+              '200': {
+                description: 'Conta do médico ativada com sucesso',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        message: { type: 'string', example: 'Medic account activated successfully.' }
+                      }
+                    }
+                  }
+                }
+              },
+              '400': {
+                description: 'Token inválido',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              },
+              '401': {
+                description: 'Token expirado',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              },
+              '404': {
+                description: 'Médico não encontrado',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              },
+              '500': {
+                description: 'Erro interno do servidor',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              }
+            }
+          }
+        },
+        '/medics/resend-activation': {
+          post: {
+            summary: 'Reenvia email de ativação de um médico',
+            tags: ['Médicos'],
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    required: ['email'],
+                    properties: {
+                      email: { type: 'string', format: 'email', example: 'dr.jose@clinica.com' }
+                    }
+                  }
+                }
+              }
+            },
+            responses: {
+              '200': {
+                description: 'Email de ativação reenviado com sucesso',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        message: {
+                          type: 'string',
+                          example: 'Activation email has been sent. Please check your inbox.'
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              '400': {
+                description: 'Erro de validação',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/ValidationError' }
+                  }
+                }
+              },
+              '404': {
+                description: 'Médico não encontrado',
                 content: {
                   'application/json': {
                     schema: { $ref: '#/components/schemas/Error' }

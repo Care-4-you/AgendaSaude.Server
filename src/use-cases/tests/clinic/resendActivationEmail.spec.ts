@@ -1,4 +1,4 @@
-import { sendActivationEmail } from "@/utils/emails/send-activation-email";
+import { sendActivationEmail } from "@/utils/email/sendActivationEmail";
 import jwt from "jsonwebtoken";
 import { FastifyRequest, FastifyReply } from "fastify";
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -17,7 +17,7 @@ const { prismaMock } = vi.hoisted(() => ({
 vi.mock('@/lib/prisma', () => ({
   prisma: prismaMock,
 }));
-vi.mock("@/utils/emails/send-activation-email");
+vi.mock("@/utils/email/sendActivationEmail");
 vi.mock("jsonwebtoken");
 vi.mock("@/env", () => ({
   env: {
@@ -45,6 +45,8 @@ const mockClinic: Clinic = {
   complement: "Clinic Complement",
   isAuthenticated: false,
   createdAt: new Date(),
+  latitude: -23.550520,
+  longitude: -46.633308,
 };
 
 describe("resendActivationEmail", () => {
@@ -82,7 +84,8 @@ describe("resendActivationEmail", () => {
     expect(sendActivationEmail).toHaveBeenCalledWith(
       mockClinic.email,
       mockClinic.name,
-      "new-token"
+      "new-token",
+      "clinics"
     );
 
     expect(reply.status).toHaveBeenCalledWith(200);

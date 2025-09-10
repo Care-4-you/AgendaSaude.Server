@@ -84,24 +84,31 @@ model Pacient {
 }
 
 model Medic {
-  id           Int              @id @default(autoincrement())
-  name         String
-  cpf          String           @unique
-  phone        String
-  email        String           @unique
-  gender       String
-  city         String
-  state        String
-  created_at   DateTime         @default(now())
-  clinicId     Int
-  crm          MedicCrm[]
-  specialty    MedicSpecialty[]
-  Consultation Consultation[]
-  clinic       Clinic           @relation(fields: [clinicId], references: [id], onDelete: Cascade)
-  Treatment    Treatment[]
+  id              Int              @id @default(autoincrement())
+  name            String
+  cellPhone       String?
+  cpf             String?          @unique
+  phone           String
+  whatsapp        String
+  email           String
+  password_hash   String
+  isAuthenticated Boolean          @default(false)
+  isWhatsapp      Boolean          @default(false)
+  photo           String?
+  gender          String
+  city            String?          // mudou de obrigatório para opcional
+  state           String?          // idem
+  created_at      DateTime         @default(now())
+  clinicId        Int?
+  clinic          Clinic?          @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  crm             MedicCrm[]
+  specialty       MedicSpecialty[]
+  Consultation    Consultation[]
+  Treatment       Treatment[]
 
   @@map("medics")
 }
+
 
 model MedicSpecialty {
   id        Int    @id @default(autoincrement())
@@ -112,7 +119,7 @@ model MedicSpecialty {
 
 model MedicCrm {
   id      Int    @id @default(autoincrement())
-  number  String @unique
+  number  String 
   state   String
   medicId Int
   medic   Medic  @relation(fields: [medicId], references: [id], onDelete: Cascade)

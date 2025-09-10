@@ -1,12 +1,12 @@
-import { makeGetAllClinicsUseCase } from "@/use-cases/factories/clinic/make-get-all-clinics-use-case";
+import { makeGetAllActivateClinicsUseCase } from "@/use-cases/factories/clinic/make-get-all-active-clinics-use-case";
 import { FastifyRequest, FastifyReply } from "fastify";
 
-export const getAllClinics = async (
+export const getAllActiveClinics = async (
   request: FastifyRequest,
   reply: FastifyReply,
 ) => {
   try {
-    const getAllClinicsUseCase = makeGetAllClinicsUseCase();
+    const getAllClinicsUseCase = makeGetAllActivateClinicsUseCase();
     const clinics = await getAllClinicsUseCase.execute();
     return reply.status(200).send({
       message: "Lista de clínicas recuperada com sucesso.",

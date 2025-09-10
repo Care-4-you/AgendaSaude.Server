@@ -1,7 +1,7 @@
 import { PrismaClinicsRepository } from "@/repositories/prisma/prisma-clinics-repository";
-import { GetAllClinicsUseCase } from "@/use-cases/modules/clinic/getAllClinics";
+import { GetAllClinicsUseCase } from "@/use-cases/modules/clinic/getAllActiveClinics";
 
-export function makeGetAllClinicsUseCase() {
+export function makeGetAllActivateClinicsUseCase() {
   const clinicsRepository = new PrismaClinicsRepository();
   return new GetAllClinicsUseCase(clinicsRepository);
 }

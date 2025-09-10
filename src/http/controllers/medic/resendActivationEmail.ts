@@ -1,9 +1,9 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
 import { env } from "@/env";
 import { sendActivationEmail } from "@/utils/email/sendActivationEmail";
+import { PrismaMedicsRepository } from "@/repositories/prisma/prisma-medics-repository";
 
 export const resendActivationEmail = async (
   request: FastifyRequest,
@@ -16,26 +16,25 @@ export const resendActivationEmail = async (
   try {
     const { email } = resendActivationSchema.parse(request.body);
 
-    const clinic = await prisma.clinic.findUnique({
-      where: { email },
-    });
+    const medicsRepository = new PrismaMedicsRepository();
+    const medic = await medicsRepository.findByEmail(email);
 
-    if (!clinic) {
+    if (!medic) {
       return reply.status(404).send({
-        message: "Clinic not found."
+        message: "Médico não encontrado."
       });
     }
 
-    if (clinic.isAuthenticated) {
+    if (medic.isAuthenticated) {
       return reply.status(200).send({
-        message: "Clinic account is already activated."
+        message: "Conta do médico já está ativada."
       });
     }
 
     const activationToken = jwt.sign(
       {
-        email: clinic.email,
-        type: "clinicActivation"
+        email: medic.email,
+        type: "medicActivation"
       },
       env.JWT_SECRET,
       {
@@ -44,14 +43,14 @@ export const resendActivationEmail = async (
     );
 
     await sendActivationEmail(
-      clinic.email,
-      clinic.name,
+      medic.email,
+      medic.name,
       activationToken,
-      "clinics"
+      "medics"
     );
 
     return reply.status(200).send({
-      message: "Activation email has been sent. Please check your inbox."
+      message: "Email de ativação foi enviado. Verifique sua caixa de entrada."
     });
   } catch (error) {
     throw error;

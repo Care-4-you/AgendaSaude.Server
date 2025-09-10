@@ -34,7 +34,7 @@ export async function resetPassword(request: FastifyRequest, reply: FastifyReply
       email: string;
       id: number;
       type: string;
-      role: "pacient" | "clinic";
+      role: "pacient" | "clinic" | "medic";
     };
 
     if (payload.type !== "passwordReset") {
@@ -60,6 +60,12 @@ export async function resetPassword(request: FastifyRequest, reply: FastifyReply
           data: { password_hash }
         });
         break;
+
+      case "medic":
+        await prisma.medic.update({
+          where: { id: payload.id },
+          data: { password_hash }
+        });
     }
 
     await prisma.passwordResetToken.update({

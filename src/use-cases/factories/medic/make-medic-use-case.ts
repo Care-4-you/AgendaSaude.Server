@@ -1,5 +1,12 @@
-import { PrismaMedicsRepository } from "@/repositories/prisma/prisma-medics-repositort";
+import { PrismaMedicsRepository } from "@/repositories/prisma/prisma-medics-repository";
+import { RegisterMedicUseCase } from "@/use-cases/modules/medic/registerMedic";
 
-export const makeMedicUseCase = () => {
-  const prismaMedicRepository = new PrismaMedicsRepository();
+export const makeMedicsUseCase = () => {
+  const prismaMedicsRepository = new PrismaMedicsRepository();
+
+  const registerMedicsUseCase = new RegisterMedicUseCase(
+    prismaMedicsRepository,
+  );
+
+  return registerMedicsUseCase;
 };
