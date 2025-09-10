@@ -8,14 +8,6 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model ClinicSpecialty {
-  id       Int    @id @default(autoincrement())
-  value    String
-  label    String
-  clinicId Int
-  clinic   Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
-}
-
 model ClinicHealthInsurance {
   id       Int    @id @default(autoincrement())
   value    String
@@ -47,7 +39,6 @@ model Clinic {
   longitude       Float?
   createdAt       DateTime                @default(now())
   healthInsurance ClinicHealthInsurance[]
-  specialty       ClinicSpecialty[]
   Consultation    Consultation[]
   Medic           Medic[]
 
