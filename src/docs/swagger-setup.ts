@@ -247,6 +247,48 @@ export async function setupSwagger(app: FastifyInstance) {
               }
             }
           },
+          ClinicSpecialtiesResponse: {
+            type: 'object',
+            properties: {
+              message: {
+                type: 'string',
+                example: 'Especialidades da clínica recuperadas com sucesso.'
+              },
+              data: {
+                type: 'object',
+                properties: {
+                  clinicId: {
+                    type: 'integer',
+                    example: 15,
+                    description: 'ID da clínica consultada'
+                  },
+                  specialties: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        value: {
+                          type: 'string',
+                          example: 'cardiologia',
+                          description: 'Valor formatado da especialidade (slug)'
+                        },
+                        label: {
+                          type: 'string',
+                          example: 'Cardiologia',
+                          description: 'Nome legível da especialidade'
+                        }
+                      }
+                    }
+                  },
+                  totalSpecialties: {
+                    type: 'integer',
+                    example: 4,
+                    description: 'Número total de especialidades'
+                  }
+                }
+              }
+            }
+          },
 
           // Medic schemas
           MedicRegister: {
@@ -539,6 +581,76 @@ export async function setupSwagger(app: FastifyInstance) {
               }
             }
           },
+        },
+        '/clinics/{clinicId}/specialties': {
+          get: {
+            summary: 'Obtém especialidades dos médicos de uma clínica',
+            tags: ['Clínicas'],
+            description: 'Retorna todas as especialidades distintas dos médicos autenticados que pertencem à clínica especificada. Apenas médicos com isAuthenticated = true são considerados.',
+            parameters: [
+              {
+                name: 'clinicId',
+                in: 'path',
+                required: true,
+                schema: { type: 'integer' },
+                description: 'ID da clínica',
+                example: 15
+              }
+            ],
+            responses: {
+              '200': {
+                description: 'Especialidades da clínica recuperadas com sucesso',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/ClinicSpecialtiesResponse' }
+                  }
+                }
+              },
+              '400': {
+                description: 'Formato de ID da clínica inválido',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        message: {
+                          type: 'string',
+                          example: 'Formato de ID da clínica inválido.'
+                        },
+                        errors: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            properties: {
+                              code: { type: 'string' },
+                              message: { type: 'string' },
+                              path: { type: 'array', items: { type: 'string' } }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              '404': {
+                description: 'Clínica não encontrada',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              },
+              '500': {
+                description: 'Erro interno do servidor',
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/Error' }
+                  }
+                }
+              }
+            }
+          }
         },
         '/clinics/active': {
           get: {
