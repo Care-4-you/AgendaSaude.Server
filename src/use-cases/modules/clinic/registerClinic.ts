@@ -77,9 +77,6 @@ export class RegisterClinicUseCase {
 
     const clinic = await this.clinicsRepository.create({
       name,
-      specialty: {
-        create: specialty
-      },
       healthInsurance: {
         create: healthInsurance
       },

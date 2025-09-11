@@ -1,10 +1,9 @@
-import { Clinic, ClinicHealthInsurance, ClinicSpecialty, Prisma } from "@prisma/client";
+import { Clinic, ClinicHealthInsurance, Prisma } from "@prisma/client";
 import { ClinicsRepository } from "../clinics-repository";
 import { randomNumberWithDigits } from "@/utils/random-number-generate";
 
 export class InMemoryClinicsRepository implements ClinicsRepository {
   public items: Clinic[] = [];
-  public specialtyItems: ClinicSpecialty[] = [];
   public healthInsuranceItems: ClinicHealthInsurance[] = [];
 
   async findById(id: number): Promise<Clinic | null> {
@@ -19,14 +18,9 @@ export class InMemoryClinicsRepository implements ClinicsRepository {
       return null;
     }
 
-    const specialty = this.specialtyItems.filter(item => item.clinicId === id);
     const healthInsurance = this.healthInsuranceItems.filter(item => item.clinicId === id);
 
-    return {
-      ...clinic,
-      specialty,
-      healthInsurance,
-    };
+    return { ...clinic, healthInsurance };
   }
 
   async findByEmail(email: string): Promise<Clinic | null> {
@@ -66,23 +60,6 @@ export class InMemoryClinicsRepository implements ClinicsRepository {
 
     this.items.push(clinic);
 
-    if (data.specialty && data.specialty.create) {
-      const specialties = Array.isArray(data.specialty.create)
-        ? data.specialty.create
-        : [data.specialty.create];
-
-      specialties.forEach(specialty => {
-        const newSpecialty: ClinicSpecialty = {
-          id: randomNumberWithDigits(),
-          value: specialty.value,
-          label: specialty.label,
-          clinicId: clinic.id
-        };
-
-        this.specialtyItems.push(newSpecialty);
-      });
-    }
-
     if (data.healthInsurance && data.healthInsurance.create) {
       const insurances = Array.isArray(data.healthInsurance.create)
         ? data.healthInsurance.create
@@ -105,13 +82,8 @@ export class InMemoryClinicsRepository implements ClinicsRepository {
 
   async findAllWithDetails() {
     return this.items.map(clinic => {
-      const specialty = this.specialtyItems.filter(item => item.clinicId === clinic.id);
       const healthInsurance = this.healthInsuranceItems.filter(item => item.clinicId === clinic.id);
-      return {
-        ...clinic,
-        specialty,
-        healthInsurance,
-      };
+      return { ...clinic, healthInsurance };
     });
   }
 }
