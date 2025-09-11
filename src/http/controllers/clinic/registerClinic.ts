@@ -14,12 +14,6 @@ export const registerClinic = async (
   const registerBodySchema = z
     .object({
       name: z.string(),
-      specialty: z.array(
-        z.object({
-          value: z.string(),
-          label: z.string(),
-        })
-      ),
       healthInsurance: z.array(
         z.object({
           value: z.string(),
@@ -59,7 +53,6 @@ export const registerClinic = async (
 
   const {
     name,
-    specialty,
     healthInsurance,
     phone,
     cellPhone,
@@ -83,7 +76,6 @@ export const registerClinic = async (
 
     const { clinic } = await registerClinicUseCase.execute({
       name,
-      specialty,
       healthInsurance,
       phone,
       cellPhone,

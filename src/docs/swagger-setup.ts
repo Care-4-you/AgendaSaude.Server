@@ -182,22 +182,12 @@ export async function setupSwagger(app: FastifyInstance) {
           ClinicRegister: {
             type: 'object',
             required: [
-              'name', 'specialty', 'healthInsurance', 'phone', 'cellPhone', 'whatsapp',
+              'name', 'healthInsurance', 'phone', 'cellPhone', 'whatsapp',
               'hasNumber', 'houseNumber', 'acceptTerm', 'email', 'cnpj', 'password',
               'passwordConfirmation', 'address', 'cep', 'city', 'state', 'neighborhood'
             ],
             properties: {
               name: { type: 'string', example: 'Clínica Saúde Plena' },
-              specialty: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    value: { type: 'string', example: 'cardiologia' },
-                    label: { type: 'string', example: 'Cardiologia' }
-                  }
-                }
-              },
               healthInsurance: {
                 type: 'array',
                 items: {
@@ -580,16 +570,6 @@ export async function setupSwagger(app: FastifyInstance) {
                               state: { type: 'string', example: 'SP' },
                               neighborhood: { type: 'string', example: 'Bela Vista' },
                               complement: { type: 'string', example: 'Sala 501', nullable: true },
-                              specialty: {
-                                type: 'array',
-                                items: {
-                                  type: 'object',
-                                  properties: {
-                                    value: { type: 'string', example: 'cardiologia' },
-                                    label: { type: 'string', example: 'Cardiologia' }
-                                  }
-                                }
-                              },
                               healthInsurance: {
                                 type: 'array',
                                 items: {
@@ -786,16 +766,6 @@ export async function setupSwagger(app: FastifyInstance) {
                             state: { type: 'string', example: 'SP' },
                             neighborhood: { type: 'string', example: 'Bela Vista' },
                             complement: { type: 'string', example: 'Sala 501' },
-                            specialty: {
-                              type: 'array',
-                              items: {
-                                type: 'object',
-                                properties: {
-                                  value: { type: 'string', example: 'cardiologia' },
-                                  label: { type: 'string', example: 'Cardiologia' }
-                                }
-                              }
-                            },
                             healthInsurance: {
                               type: 'array',
                               items: {

@@ -49,7 +49,6 @@ export const getClinicDetails = async (
       latitude: clinic.latitude,
       longitude: clinic.longitude,
       createdAt: clinic.createdAt,
-      specialty: clinic.specialty || [],
       healthInsurance: clinic.healthInsurance || [],
       // Não incluir campos sensíveis como password_hash, isAuthenticated
     };

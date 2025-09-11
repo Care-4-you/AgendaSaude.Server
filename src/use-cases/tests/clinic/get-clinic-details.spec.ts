@@ -31,12 +31,6 @@ describe("Get Clinic Details Use Case", () => {
       neighborhood: "Centro",
       complement: "Apto 101",
       isAuthenticated: true,
-      specialty: {
-        create: [
-          { value: "cardiology", label: "Cardiologia" },
-          { value: "dermatology", label: "Dermatologia" }
-        ]
-      },
       healthInsurance: {
         create: [
           { value: "unimed", label: "Unimed" },
@@ -51,7 +45,6 @@ describe("Get Clinic Details Use Case", () => {
     expect(foundClinic?.id).toBe(clinic.id);
     expect(foundClinic?.name).toBe("Clínica Teste");
     expect(foundClinic?.email).toBe("test@example.com");
-    expect(foundClinic?.specialty).toHaveLength(2);
     expect(foundClinic?.healthInsurance).toHaveLength(2);
   });
 

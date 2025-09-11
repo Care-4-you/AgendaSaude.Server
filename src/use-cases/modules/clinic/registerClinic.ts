@@ -5,10 +5,6 @@ import { Clinic } from "@prisma/client";
 
 interface IRegisterClinic {
   name: string;
-  specialty: {
-    value: string;
-    label: string;
-  }[];
   healthInsurance: {
     value: string;
     label: string;
@@ -41,7 +37,6 @@ export class RegisterClinicUseCase {
 
   execute = async ({
     name,
-    specialty,
     healthInsurance,
     phone,
     cellPhone,

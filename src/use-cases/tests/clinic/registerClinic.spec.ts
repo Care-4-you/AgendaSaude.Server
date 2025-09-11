@@ -16,7 +16,6 @@ describe("Register Clinic Use Case", () => {
   it("Should be able to register a clinic", async () => {
     const { clinic } = await sut.execute({
       name: "Clinica Teste",
-      specialty: [{ value: "cirurgia", label: "Cirurgia" }],
       healthInsurance: [{ value: "unimed", label: "Unimed" }],
       phone: "11989234518",
       cellPhone: "11989234518",
@@ -41,7 +40,6 @@ describe("Register Clinic Use Case", () => {
   it("Should hash clinic password upon registration", async () => {
     const { clinic } = await sut.execute({
       name: "Clinica Teste",
-      specialty: [{ value: "cirurgia", label: "Cirurgia" }],
       healthInsurance: [{ value: "unimed", label: "Unimed" }],
       phone: "11989234518",
       cellPhone: "11989234518",
@@ -70,7 +68,6 @@ describe("Register Clinic Use Case", () => {
 
     await sut.execute({
       name: "Clinica Teste",
-      specialty: [{ value: "cirurgia", label: "Cirurgia" }],
       healthInsurance: [{ value: "unimed", label: "Unimed" }],
       phone: "11989234518",
       cellPhone: "11989234518",
@@ -92,7 +89,6 @@ describe("Register Clinic Use Case", () => {
     await expect(() =>
       sut.execute({
         name: "Clinica Teste",
-        specialty: [{ value: "cirurgia", label: "Cirurgia" }],
         healthInsurance: [{ value: "unimed", label: "Unimed" }],
         phone: "11989234518",
         cellPhone: "11989234518",
