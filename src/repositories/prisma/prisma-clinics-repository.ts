@@ -62,13 +62,6 @@ export class PrismaClinicsRepository implements ClinicsRepository {
     const clinic = await prisma.clinic.findUnique({
       where: { id },
       include: {
-        specialty: {
-          select: {
-            id: true,
-            value: true,
-            label: true,
-          },
-        },
         healthInsurance: {
           select: {
             id: true,
@@ -88,7 +81,6 @@ export class PrismaClinicsRepository implements ClinicsRepository {
         isAuthenticated: true,
       },
       include: {
-        specialty: { select: { id: true, value: true, label: true } },
         healthInsurance: { select: { id: true, value: true, label: true } },
       },
     });
