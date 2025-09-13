@@ -49,7 +49,7 @@ export const getClinicsByProximity = async (
     state: z.string().min(2, "Estado deve ter pelo menos 2 caracteres"),
     neighborhood: z.string().min(1, "Bairro é obrigatório"),
     houseNumber: z.string().min(1, "Número da casa é obrigatório"),
-    radiusInKm: z.number().min(0.1).max(10000, "Raio deve estar entre 0.1 e 10000 km"),
+    radiusInKm: z.number().min(0.1).max(60, "Raio deve estar entre 0.1 e 60 km"),
   });
 
   try {
