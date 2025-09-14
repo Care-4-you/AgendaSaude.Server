@@ -1,4 +1,3 @@
-// src/utils/geocoding/nominatim-service.ts
 import axios from 'axios';
 
 interface StructuredAddress {

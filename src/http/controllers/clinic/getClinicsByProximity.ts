@@ -19,7 +19,7 @@ export const getClinicsByProximity = async (
   const getClinicsByProximitySchema = z.object({
     address: z.string().min(1, "Endereço é obrigatório"),
     radiusInKm: z.number().min(0.1).max(60, "Raio deve estar entre 0.1 e 60 km"),
-    specialties: z.array(z.string()).optional(), // Array de especialidades (opcional)
+    specialties: z.array(z.string()).optional(),
   });
 
   try {
