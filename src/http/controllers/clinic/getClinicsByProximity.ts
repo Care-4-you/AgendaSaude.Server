@@ -1,41 +1,15 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
-import { makeGetAllActivateClinicsUseCase } from "@/use-cases/factories/clinic/make-get-all-active-clinics-use-case";
 import { geocodeAddress, GeocodingError } from "@/utils/geocoding/nominatim-service";
 import { getDistance } from "geolib";
-import { Clinic, ClinicHealthInsurance } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-
-interface AddressInput {
-  address: string;
-  cep: string;
-  city: string;
-  state: string;
-  neighborhood: string;
-  houseNumber: string;
-}
 
 interface ClinicWithDistance {
   id: number;
   name: string;
-  phone: string;
-  cellPhone: string;
-  whatsapp: string;
-  hasNumber: boolean;
-  houseNumber: string;
-  email: string;
-  cnpj: string;
   address: string;
-  cep: string;
-  city: string;
-  state: string;
-  neighborhood: string;
-  complement: string | null;
-  latitude: number;
-  longitude: number;
-  createdAt: Date;
-  healthInsurance: ClinicHealthInsurance[];
   distanceInKm: number;
+  specialties: string[];
 }
 
 export const getClinicsByProximity = async (
@@ -44,38 +18,16 @@ export const getClinicsByProximity = async (
 ) => {
   const getClinicsByProximitySchema = z.object({
     address: z.string().min(1, "Endereço é obrigatório"),
-    cep: z.string().min(8, "CEP deve ter pelo menos 8 caracteres"),
-    city: z.string().min(1, "Cidade é obrigatória"),
-    state: z.string().min(2, "Estado deve ter pelo menos 2 caracteres"),
-    neighborhood: z.string().min(1, "Bairro é obrigatório"),
-    houseNumber: z.string().min(1, "Número da casa é obrigatório"),
     radiusInKm: z.number().min(0.1).max(60, "Raio deve estar entre 0.1 e 60 km"),
+    specialties: z.array(z.string()).optional(), // Array de especialidades (opcional)
   });
 
   try {
-    const {
-      address,
-      cep,
-      city,
-      state,
-      neighborhood,
-      houseNumber,
-      radiusInKm,
-    } = getClinicsByProximitySchema.parse(request.body);
-
-    // Geocodificar o endereço fornecido pelo paciente
-    const addressInput: AddressInput = {
-      address,
-      cep,
-      city,
-      state,
-      neighborhood,
-      houseNumber,
-    };
+    const { address, radiusInKm, specialties: requestedSpecialties } = getClinicsByProximitySchema.parse(request.body);
 
     let patientCoordinates;
     try {
-      patientCoordinates = await geocodeAddress(addressInput);
+      patientCoordinates = await geocodeAddress(address);
     } catch (error) {
       if (error instanceof GeocodingError) {
         return reply.status(400).send({
@@ -86,17 +38,24 @@ export const getClinicsByProximity = async (
       throw error;
     }
 
-    // Buscar todas as clínicas ativas
+    // Buscar todas as clínicas ativas com médicos ativos e especialidades
     const clinics = await prisma.clinic.findMany({
       where: {
         isAuthenticated: true,
       },
       include: {
-        healthInsurance: true,
+        Medic: {
+          where: {
+            isAuthenticated: true,
+          },
+          include: {
+            specialty: true,
+          },
+        },
       },
     });
 
-    // Filtrar clínicas que têm coordenadas e calcular distâncias
+    // Filtrar clínicas e calcular distâncias
     const clinicsWithDistance: ClinicWithDistance[] = [];
 
     for (const clinic of clinics) {
@@ -105,7 +64,7 @@ export const getClinicsByProximity = async (
         continue;
       }
 
-      // Calcular distância usando geolib
+      // Calcular distância
       const distanceInMeters = getDistance(
         {
           latitude: patientCoordinates.latitude,
@@ -119,41 +78,52 @@ export const getClinicsByProximity = async (
 
       const distanceInKm = distanceInMeters / 1000;
 
-      // Filtrar apenas clínicas dentro do raio especificado
+      // Filtrar apenas clínicas dentro do raio
       if (distanceInKm <= radiusInKm) {
+        // Obter especialidades dos médicos ativos da clínica
+        const clinicSpecialties = clinic.Medic
+          .flatMap(medic => medic.specialty.map(spec => spec.specialty))
+          .filter((specialty, index, self) => self.indexOf(specialty) === index); // Remove duplicatas
+
+        // Se foram solicitadas especialidades específicas, filtrar
+        if (requestedSpecialties && requestedSpecialties.length > 0) {
+          const hasRequestedSpecialty = requestedSpecialties.some(requested =>
+            clinicSpecialties.some(clinicSpec =>
+              clinicSpec.toLowerCase().includes(requested.toLowerCase())
+            )
+          );
+
+          if (!hasRequestedSpecialty) {
+            continue; // Pula esta clínica se não tem a especialidade solicitada
+          }
+        }
+
+        // Montar endereço completo da clínica
+        const fullAddress = `${clinic.address}, N° ${clinic.houseNumber}, ${clinic.neighborhood}, ${clinic.city}, ${clinic.state}`;
+
         clinicsWithDistance.push({
           id: clinic.id,
           name: clinic.name,
-          phone: clinic.phone,
-          cellPhone: clinic.cellPhone,
-          whatsapp: clinic.whatsapp,
-          hasNumber: clinic.hasNumber,
-          houseNumber: clinic.houseNumber,
-          email: clinic.email,
-          cnpj: clinic.cnpj,
-          address: clinic.address,
-          cep: clinic.cep,
-          city: clinic.city,
-          state: clinic.state,
-          neighborhood: clinic.neighborhood,
-          complement: clinic.complement,
-          latitude: clinic.latitude,
-          longitude: clinic.longitude,
-          createdAt: clinic.createdAt,
-          healthInsurance: clinic.healthInsurance,
-          distanceInKm: Math.round(distanceInKm * 100) / 100, // Arredondar para 2 casas decimais
+          address: fullAddress,
+          distanceInKm: Math.round(distanceInKm * 100) / 100,
+          specialties: clinicSpecialties,
         });
       }
     }
 
-    // Ordenar por distância (mais próximo primeiro)
+    // Ordenar por distância
     clinicsWithDistance.sort((a, b) => a.distanceInKm - b.distanceInKm);
+
+    // Se não encontrou nenhuma clínica
+    if (clinicsWithDistance.length === 0) {
+      return reply.status(404).send({
+        message: `Nenhuma clínica encontrada em um raio de ${radiusInKm}km${requestedSpecialties && requestedSpecialties.length > 0 ? ` para as especialidades: ${requestedSpecialties.join(', ')}` : ''}.`,
+      });
+    }
 
     return reply.status(200).send({
       message: `${clinicsWithDistance.length} clínicas encontradas em um raio de ${radiusInKm}km.`,
       data: {
-        patientCoordinates,
-        searchRadius: radiusInKm,
         totalFound: clinicsWithDistance.length,
         clinics: clinicsWithDistance,
       },
