@@ -10,6 +10,8 @@ interface ClinicWithDistance {
   address: string;
   distanceInKm: number;
   specialties: string[];
+  latitude: number;
+  longitude: number;
 }
 
 export const getClinicsByProximity = async (
@@ -107,6 +109,8 @@ export const getClinicsByProximity = async (
           address: fullAddress,
           distanceInKm: Math.round(distanceInKm * 100) / 100,
           specialties: clinicSpecialties,
+          latitude: clinic.latitude,
+          longitude: clinic.longitude,
         });
       }
     }
@@ -118,6 +122,14 @@ export const getClinicsByProximity = async (
     if (clinicsWithDistance.length === 0) {
       return reply.status(404).send({
         message: `Nenhuma clínica encontrada em um raio de ${radiusInKm}km${requestedSpecialties && requestedSpecialties.length > 0 ? ` para as especialidades: ${requestedSpecialties.join(', ')}` : ''}.`,
+        data: {
+          totalFound: 0,
+          patientCoordinates: {
+            latitude: patientCoordinates.latitude,
+            longitude: patientCoordinates.longitude,
+          },
+          clinics: [],
+        },
       });
     }
 
@@ -125,6 +137,10 @@ export const getClinicsByProximity = async (
       message: `${clinicsWithDistance.length} clínicas encontradas em um raio de ${radiusInKm}km.`,
       data: {
         totalFound: clinicsWithDistance.length,
+        patientCoordinates: {
+          latitude: patientCoordinates.latitude,
+          longitude: patientCoordinates.longitude,
+        },
         clinics: clinicsWithDistance,
       },
     });
