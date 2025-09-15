@@ -3,15 +3,12 @@ import { z } from "zod";
 import { geocodeAddress, GeocodingError } from "@/utils/geocoding/nominatim-service";
 import { getDistance } from "geolib";
 import { prisma } from "@/lib/prisma";
+import { Clinic, Prisma } from "@prisma/client";
 
-interface ClinicWithDistance {
-  id: number;
-  name: string;
-  address: string;
+interface ClinicWithDistance extends Omit<Clinic, 'password_hash'> {
+  fullAdress: string;
   distanceInKm: number;
   specialties: string[];
-  latitude: number;
-  longitude: number;
 }
 
 export const getClinicsByProximity = async (
@@ -41,11 +38,32 @@ export const getClinicsByProximity = async (
     }
 
     // Buscar todas as clínicas ativas com médicos ativos e especialidades
+    // Usando select para excluir o passwordHash
     const clinics = await prisma.clinic.findMany({
       where: {
         isAuthenticated: true,
       },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        cellPhone: true,
+        whatsapp: true,
+        hasNumber: true,
+        houseNumber: true,
+        acceptTerm: true,
+        email: true,
+        cnpj: true,
+        isAuthenticated: true,
+        address: true,
+        cep: true,
+        city: true,
+        state: true,
+        neighborhood: true,
+        complement: true,
+        latitude: true,
+        longitude: true,
+        createdAt: true,
         Medic: {
           where: {
             isAuthenticated: true,
@@ -104,13 +122,10 @@ export const getClinicsByProximity = async (
         const fullAddress = `${clinic.address}, N° ${clinic.houseNumber}, ${clinic.neighborhood}, ${clinic.city}, ${clinic.state}`;
 
         clinicsWithDistance.push({
-          id: clinic.id,
-          name: clinic.name,
-          address: fullAddress,
+          ...clinic,
+          fullAdress: fullAddress,
           distanceInKm: Math.round(distanceInKm * 100) / 100,
-          specialties: clinicSpecialties,
-          latitude: clinic.latitude,
-          longitude: clinic.longitude,
+          specialties: clinicSpecialties
         });
       }
     }
