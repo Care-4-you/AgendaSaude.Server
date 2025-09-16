@@ -65,11 +65,30 @@ export const getClinicsByProximity = async (
         longitude: true,
         createdAt: true,
         Medic: {
-          where: {
+          where: { isAuthenticated: true },
+          select: {
+            id: true,
+            name: true,
+            cellPhone: true,
+            cpf: true,
+            phone: true,
+            whatsapp: true,
+            email: true,
             isAuthenticated: true,
-          },
-          include: {
-            specialty: true,
+            isWhatsapp: true,
+            photo: true,
+            gender: true,
+            city: true,
+            state: true,
+            created_at: true,
+            clinicId: true,
+            specialty: {
+              select: {
+                id: true,
+                specialty: true,
+                medicId: true,
+              },
+            },
           },
         },
       },
@@ -122,10 +141,10 @@ export const getClinicsByProximity = async (
         const fullAddress = `${clinic.address}, N° ${clinic.houseNumber}, ${clinic.neighborhood}, ${clinic.city}, ${clinic.state}`;
 
         clinicsWithDistance.push({
-          ...clinic,
           fullAdress: fullAddress,
           distanceInKm: Math.round(distanceInKm * 100) / 100,
-          specialties: clinicSpecialties
+          specialties: clinicSpecialties,
+          ...clinic,
         });
       }
     }
