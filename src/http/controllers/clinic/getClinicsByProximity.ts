@@ -64,6 +64,13 @@ export const getClinicsByProximity = async (
         latitude: true,
         longitude: true,
         createdAt: true,
+        healthInsurance: {
+          select: {
+            id: true,
+            value: true,
+            label: true,
+          },
+        },
         Medic: {
           where: { isAuthenticated: true },
           select: {
