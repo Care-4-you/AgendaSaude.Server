@@ -294,36 +294,49 @@ export async function setupSwagger(app: FastifyInstance) {
           MedicRegister: {
             type: 'object',
             required: [
-              'name', 'cpf', 'phone', 'email', 'gender', 'city', 'state', 'password',
-              'specialty', 'crm', 'clinicId'
+              'acceptTerm', 'cellPhone', 'councils', 'councilsNumber', 'councilsUF',
+              'email', 'gender', 'isWhatsapp', 'name', 'password', 'passwordConfirmation',
+              'phone', 'specialty', 'whatsapp'
             ],
             properties: {
-              name: { type: 'string', example: 'Dr. José Silva' },
-              cpf: { type: 'string', example: '12345678901' },
-              phone: { type: 'string', example: '1133334444' },
+              acceptTerm: { type: 'boolean', example: true },
+              cellPhone: { type: 'string', example: '11988889999' },
+              councils: {
+                type: 'object',
+                properties: {
+                  value: { type: 'string', example: 'crm' },
+                  label: { type: 'string', example: 'CRM' }
+                }
+              },
+              councilsNumber: { type: 'string', example: '123456' },
+              councilsUF: {
+                type: 'object',
+                properties: {
+                  value: { type: 'string', example: 'SP' },
+                  label: { type: 'string', example: 'São Paulo' }
+                }
+              },
               email: { type: 'string', format: 'email', example: 'dr.jose@clinica.com' },
-              gender: { type: 'string', example: 'Masculino' },
-              city: { type: 'string', example: 'São Paulo' },
-              state: { type: 'string', example: 'SP' },
+              gender: {
+                type: 'object',
+                properties: {
+                  value: { type: 'string', example: 'M' },
+                  label: { type: 'string', example: 'Masculino' }
+                }
+              },
+              isWhatsapp: { type: 'boolean', example: true },
+              name: { type: 'string', example: 'Dr. José Silva' },
               password: { type: 'string', format: 'password', example: 'senha123' },
+              passwordConfirmation: { type: 'string', format: 'password', example: 'senha123' },
+              phone: { type: 'string', example: '1133334444' },
               specialty: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                  example: 'Cardiologia'
+                type: 'object',
+                properties: {
+                  value: { type: 'string', example: 'cardiologia' },
+                  label: { type: 'string', example: 'Cardiologia' }
                 }
               },
-              crm: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    number: { type: 'string', example: '123456' },
-                    state: { type: 'string', example: 'SP' }
-                  }
-                }
-              },
-              clinicId: { type: 'integer', example: 1 }
+              whatsapp: { type: 'string', example: '11988889999' }
             }
           },
           MedicResponse: {
